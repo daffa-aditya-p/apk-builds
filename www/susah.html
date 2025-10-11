@@ -1,0 +1,2660 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="description" content="Smart IoT Plant Watering System - Professional Dashboard">
+    <meta name="theme-color" content="#0A1929">
+    <title>Smart Plant Watering System | IoT Dashboard V2.0</title>
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Font Awesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    
+    <!-- Google Fonts - Orbitron & Poppins -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary-cyan: #00D9FF;
+            --primary-green: #00FF88;
+            --accent-gold: #FFD700;
+            --dark-navy: #0A1929;
+            --dark-slate: #1A2332;
+            --surface-dark: #0F1B2A;
+            --glass-bg: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.1);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Poppins', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #0A1929;
+            color: #ffffff;
+            overflow-x: hidden;
+            position: relative;
+        }
+        
+        /* Animated Background */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(0, 217, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(0, 255, 136, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 40% 20%, rgba(255, 215, 0, 0.05) 0%, transparent 50%);
+            z-index: 0;
+            animation: bgPulse 15s ease-in-out infinite;
+        }
+        
+        @keyframes bgPulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+        
+        /* Grid Background Pattern */
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(rgba(0, 217, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 217, 255, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            z-index: 0;
+            pointer-events: none;
+        }
+        
+        /* Main Container */
+        .app-container {
+            position: relative;
+            z-index: 1;
+        }
+        
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 12px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: var(--dark-slate);
+            border-radius: 10px;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, var(--primary-cyan), var(--primary-green));
+            border-radius: 10px;
+            border: 2px solid var(--dark-slate);
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(180deg, var(--primary-green), var(--primary-cyan));
+        }
+        
+        /* Glassmorphism Card */
+        .glass-card {
+            background: rgba(26, 35, 50, 0.6);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            box-shadow: 
+                0 8px 32px 0 rgba(0, 0, 0, 0.37),
+                inset 0 1px 0 0 rgba(255, 255, 255, 0.1);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .glass-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 
+                0 12px 40px 0 rgba(0, 217, 255, 0.2),
+                inset 0 1px 0 0 rgba(255, 255, 255, 0.15);
+            border-color: rgba(0, 217, 255, 0.3);
+        }
+        
+        /* Neon Glow Effect */
+        .neon-cyan {
+            text-shadow: 
+                0 0 5px rgba(0, 217, 255, 0.5),
+                0 0 10px rgba(0, 217, 255, 0.3),
+                0 0 20px rgba(0, 217, 255, 0.2);
+        }
+        
+        .neon-green {
+            text-shadow: 
+                0 0 5px rgba(0, 255, 136, 0.5),
+                0 0 10px rgba(0, 255, 136, 0.3),
+                0 0 20px rgba(0, 255, 136, 0.2);
+        }
+        
+        .neon-gold {
+            text-shadow: 
+                0 0 5px rgba(255, 215, 0, 0.5),
+                0 0 10px rgba(255, 215, 0, 0.3),
+                0 0 20px rgba(255, 215, 0, 0.2);
+        }
+        
+        /* Glowing Border */
+        .glow-border-cyan {
+            box-shadow: 
+                0 0 20px rgba(0, 217, 255, 0.4),
+                0 0 40px rgba(0, 217, 255, 0.2),
+                inset 0 0 20px rgba(0, 217, 255, 0.1);
+        }
+        
+        .glow-border-green {
+            box-shadow: 
+                0 0 20px rgba(0, 255, 136, 0.4),
+                0 0 40px rgba(0, 255, 136, 0.2),
+                inset 0 0 20px rgba(0, 255, 136, 0.1);
+        }
+        
+        .glow-border-gold {
+            box-shadow: 
+                0 0 20px rgba(255, 215, 0, 0.4),
+                0 0 40px rgba(255, 215, 0, 0.2),
+                inset 0 0 20px rgba(255, 215, 0, 0.1);
+        }
+        
+        /* Header with Glassmorphism */
+        .header-glass {
+            background: rgba(10, 25, 41, 0.8);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(0, 217, 255, 0.2);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+        }
+        
+        /* Orbitron Font for Tech Feel */
+        .tech-font {
+            font-family: 'Orbitron', monospace;
+            letter-spacing: 2px;
+        }
+        
+        /* Animated Gradient Text */
+        .gradient-text-animated {
+            background: linear-gradient(90deg, #00D9FF, #00FF88, #FFD700, #00FF88, #00D9FF);
+            background-size: 300% 100%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: gradientShift 5s ease infinite;
+        }
+        
+        @keyframes gradientShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+        
+        /* Pulse Animation */
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+            50% {
+                opacity: 0.7;
+                transform: scale(1.05);
+            }
+        }
+        
+        .pulse-animation {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        
+        /* Floating Animation */
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0px);
+            }
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+        
+        .float-animation {
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        /* Rotating Animation */
+        @keyframes rotate360 {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        .rotate-slow {
+            animation: rotate360 20s linear infinite;
+        }
+        
+        .rotate-medium {
+            animation: rotate360 10s linear infinite;
+        }
+        
+        /* Water Drop Animation */
+        @keyframes waterDrop {
+            0% {
+                transform: translateY(-20px) scale(1);
+                opacity: 0;
+            }
+            50% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(40px) scale(0.8);
+                opacity: 0;
+            }
+        }
+        
+        .water-drop {
+            animation: waterDrop 2s ease-in-out infinite;
+        }
+        
+        /* Leaf Animation */
+        @keyframes leafSway {
+            0%, 100% {
+                transform: rotate(0deg);
+            }
+            25% {
+                transform: rotate(-5deg);
+            }
+            75% {
+                transform: rotate(5deg);
+            }
+        }
+        
+        .leaf-sway {
+            animation: leafSway 3s ease-in-out infinite;
+        }
+        
+        /* Status Indicator */
+        .status-online {
+            position: relative;
+        }
+        
+        .status-online::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: inherit;
+            border-radius: inherit;
+            animation: statusPing 1.5s cubic-bezier(0, 0, 0.2, 1) infinite;
+        }
+        
+        @keyframes statusPing {
+            75%, 100% {
+                transform: scale(1.5);
+                opacity: 0;
+            }
+        }
+        
+        /* Button Styles */
+        .cyber-button {
+            position: relative;
+            background: linear-gradient(135deg, var(--primary-cyan), var(--primary-green));
+            border: none;
+            padding: 18px 40px;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 16px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            cursor: pointer;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            box-shadow: 
+                0 4px 15px rgba(0, 217, 255, 0.4),
+                0 0 20px rgba(0, 217, 255, 0.2);
+        }
+        
+        .cyber-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.5s ease;
+        }
+        
+        .cyber-button:hover::before {
+            left: 100%;
+        }
+        
+        .cyber-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 
+                0 6px 25px rgba(0, 217, 255, 0.6),
+                0 0 40px rgba(0, 217, 255, 0.4);
+        }
+        
+        .cyber-button:active {
+            transform: translateY(-1px);
+        }
+        
+        .cyber-button-stop {
+            background: linear-gradient(135deg, #FF4444, #CC0000);
+            box-shadow: 
+                0 4px 15px rgba(255, 68, 68, 0.4),
+                0 0 20px rgba(255, 68, 68, 0.2);
+        }
+        
+        .cyber-button-stop:hover {
+            box-shadow: 
+                0 6px 25px rgba(255, 68, 68, 0.6),
+                0 0 40px rgba(255, 68, 68, 0.4);
+        }
+        
+        .cyber-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        /* Hero Status Banner */
+        .hero-banner {
+            position: relative;
+            overflow: hidden;
+            border-radius: 24px;
+            background: linear-gradient(135deg, rgba(26, 35, 50, 0.8), rgba(15, 27, 42, 0.9));
+            backdrop-filter: blur(20px);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .hero-banner::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(0, 217, 255, 0.1) 0%, transparent 70%);
+            animation: heroRotate 10s linear infinite;
+        }
+        
+        @keyframes heroRotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        .hero-banner.active {
+            background: linear-gradient(135deg, rgba(0, 217, 255, 0.2), rgba(0, 255, 136, 0.2));
+            border-color: rgba(0, 255, 136, 0.5);
+        }
+        
+        /* Metric Card Icon */
+        .metric-icon {
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 16px;
+            font-size: 28px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .glass-card:hover .metric-icon {
+            transform: scale(1.1) rotate(5deg);
+        }
+        
+        /* Progress Bar */
+        .progress-container {
+            width: 100%;
+            height: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary-cyan), var(--primary-green));
+            border-radius: 10px;
+            transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .progress-bar::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            animation: progressShine 2s ease-in-out infinite;
+        }
+        
+        @keyframes progressShine {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(200%); }
+        }
+        
+        /* Water Tank Visualization */
+        .water-tank {
+            position: relative;
+            width: 100%;
+            height: 250px;
+            background: rgba(0, 217, 255, 0.05);
+            border: 2px solid rgba(0, 217, 255, 0.3);
+            border-radius: 16px;
+            overflow: hidden;
+        }
+        
+        .water-fill {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: linear-gradient(180deg, rgba(0, 217, 255, 0.6), rgba(0, 217, 255, 0.9));
+            transition: height 1s cubic-bezier(0.4, 0, 0.2, 1);
+            filter: blur(0.5px);
+        }
+        
+        .water-wave {
+            position: absolute;
+            top: -20px;
+            left: 0;
+            width: 200%;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            animation: waveMotion 3s ease-in-out infinite;
+        }
+        
+        @keyframes waveMotion {
+            0%, 100% {
+                transform: translateX(0) translateY(0);
+            }
+            25% {
+                transform: translateX(-25%) translateY(-5px);
+            }
+            75% {
+                transform: translateX(-75%) translateY(5px);
+            }
+        }
+        
+        /* pH Scale */
+        .ph-scale {
+            width: 100%;
+            height: 40px;
+            background: linear-gradient(90deg, 
+                #FF4444 0%, 
+                #FF8844 14%, 
+                #FFCC44 28%, 
+                #FFD700 42%, 
+                #00FF88 50%, 
+                #00D9FF 58%, 
+                #0088FF 72%, 
+                #4444FF 86%, 
+                #8844FF 100%
+            );
+            border-radius: 20px;
+            position: relative;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        .ph-marker {
+            position: absolute;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: 6px;
+            height: 60px;
+            background: white;
+            border: 3px solid var(--dark-navy);
+            border-radius: 4px;
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.8);
+            transition: left 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .ph-marker::after {
+            content: '';
+            position: absolute;
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 8px solid transparent;
+            border-right: 8px solid transparent;
+            border-top: 12px solid white;
+        }
+        
+        /* Activity Log */
+        .activity-item {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-left: 3px solid var(--primary-cyan);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+            transition: all 0.3s ease;
+        }
+        
+        .activity-item:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-left-color: var(--primary-green);
+            transform: translateX(5px);
+        }
+        
+        .activity-icon {
+            width: 45px;
+            height: 45px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+        
+        /* Chart Container */
+        .chart-wrapper {
+            background: rgba(26, 35, 50, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 24px;
+        }
+        
+        /* Loading Skeleton */
+        @keyframes shimmer {
+            0% {
+                background-position: -1000px 0;
+            }
+            100% {
+                background-position: 1000px 0;
+            }
+        }
+        
+        .skeleton {
+            background: linear-gradient(90deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.1) 50%, rgba(255, 255, 255, 0.05) 100%);
+            background-size: 1000px 100%;
+            animation: shimmer 2s infinite linear;
+        }
+        
+        /* Toast Notification */
+        .toast {
+            position: fixed;
+            top: 100px;
+            right: 20px;
+            z-index: 9999;
+            min-width: 320px;
+            max-width: 500px;
+            background: rgba(26, 35, 50, 0.95);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(0, 217, 255, 0.3);
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+            animation: slideInRight 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        @keyframes slideInRight {
+            from {
+                transform: translateX(120%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        
+        @keyframes slideOutRight {
+            from {
+                transform: translateX(0);
+                opacity: 1;
+            }
+            to {
+                transform: translateX(120%);
+                opacity: 0;
+            }
+        }
+        
+        .toast.toast-exit {
+            animation: slideOutRight 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        /* Alert Banner */
+        .alert-banner {
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-left: 4px solid;
+            background: rgba(26, 35, 50, 0.8);
+            backdrop-filter: blur(20px);
+            animation: slideInDown 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        @keyframes slideInDown {
+            from {
+                transform: translateY(-100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+        
+        .alert-success {
+            border-left-color: var(--primary-green);
+            box-shadow: 0 0 20px rgba(0, 255, 136, 0.2);
+        }
+        
+        .alert-warning {
+            border-left-color: var(--accent-gold);
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.2);
+        }
+        
+        .alert-error {
+            border-left-color: #FF4444;
+            box-shadow: 0 0 20px rgba(255, 68, 68, 0.2);
+        }
+        
+        .alert-info {
+            border-left-color: var(--primary-cyan);
+            box-shadow: 0 0 20px rgba(0, 217, 255, 0.2);
+        }
+        
+        /* Mode Selector */
+        .mode-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 12px 24px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .mode-btn:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: var(--primary-cyan);
+            transform: translateY(-2px);
+        }
+        
+        .mode-btn.active {
+            background: linear-gradient(135deg, var(--primary-cyan), var(--primary-green));
+            border-color: var(--primary-green);
+            box-shadow: 0 0 20px rgba(0, 217, 255, 0.4);
+        }
+        
+        /* Statistics Badge */
+        .stat-badge {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 24px;
+            transition: all 0.3s ease;
+        }
+        
+        .stat-badge:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: var(--primary-cyan);
+            transform: scale(1.05);
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero-banner {
+                padding: 24px !important;
+            }
+            
+            .cyber-button {
+                padding: 14px 28px;
+                font-size: 14px;
+            }
+            
+            .glass-card {
+                padding: 16px;
+            }
+            
+            .toast {
+                min-width: 280px;
+                right: 10px;
+            }
+        }
+        
+        /* Footer */
+        .footer-glass {
+            background: rgba(10, 25, 41, 0.8);
+            backdrop-filter: blur(20px);
+            border-top: 1px solid rgba(0, 217, 255, 0.2);
+        }
+        
+        /* Custom Select Dropdown */
+        select {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        select:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: var(--primary-cyan);
+        }
+        
+        select:focus {
+            outline: none;
+            border-color: var(--primary-green);
+            box-shadow: 0 0 15px rgba(0, 255, 136, 0.3);
+        }
+        
+        option {
+            background: var(--dark-slate);
+            color: white;
+        }
+        
+        /* Ripple Effect */
+        .ripple {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.5);
+            transform: scale(0);
+            animation: rippleEffect 0.6s ease-out;
+            pointer-events: none;
+        }
+        
+        @keyframes rippleEffect {
+            to {
+                transform: scale(4);
+                opacity: 0;
+            }
+        }
+        
+        /* Data Value Animation */
+        @keyframes countUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .value-animated {
+            animation: countUp 0.5s ease-out;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        
+        <!-- Header -->
+        <header class="header-glass sticky top-0 z-50">
+            <div class="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-4">
+                <div class="flex items-center justify-between flex-wrap gap-4">
+                    
+                    <!-- Logo & Brand -->
+                    <div class="flex items-center space-x-4">
+                        <div class="relative w-16 h-16 bg-gradient-to-br from-cyan-500 to-green-500 rounded-2xl flex items-center justify-center glow-border-cyan rotate-slow">
+                            <i class="fas fa-robot text-white text-3xl"></i>
+                            <div class="absolute -top-1 -right-1 w-4 h-4 bg-green-400 rounded-full status-online"></div>
+                        </div>
+                        <div>
+                            <h1 class="text-2xl sm:text-3xl font-black tech-font gradient-text-animated">
+                                SMART PLANT WATERING
+                            </h1>
+                            <p class="text-sm text-gray-400 font-medium">IoT Automation System v2.0</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Status & Time -->
+                    <div class="flex flex-col items-end space-y-2">
+                        <div class="flex items-center space-x-3">
+                            <span class="text-sm font-medium text-gray-400">Status:</span>
+                            <div id="connectionStatus" class="flex items-center space-x-2 px-4 py-2 rounded-full bg-gradient-to-r from-green-500/20 to-cyan-500/20 border border-green-400/30">
+                                <span class="w-3 h-3 rounded-full bg-green-400 pulse-animation"></span>
+                                <span class="text-sm font-bold text-green-400 tech-font">ONLINE</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center space-x-2 text-sm text-gray-400">
+                            <i class="far fa-clock text-cyan-400"></i>
+                            <span id="lastUpdate">Last update: Just now</span>
+                        </div>
+                        <div class="flex items-center space-x-2 text-xs text-gray-500">
+                            <i class="far fa-calendar-alt text-cyan-400"></i>
+                            <span id="currentDateTime" class="tech-font">Loading...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+        
+        <!-- Alert Container -->
+        <div id="alertContainer" class="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 mt-6"></div>
+        
+        <!-- Main Content -->
+        <main class="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            
+            <!-- Hero Status Banner -->
+            <section id="heroStatus" class="hero-banner p-8 mb-8">
+                <div class="relative z-10 flex flex-col lg:flex-row items-center justify-between gap-6">
+                    <div class="flex items-center space-x-6">
+                        <div id="heroIcon" class="w-28 h-28 rounded-3xl bg-gradient-to-br from-gray-600/30 to-gray-800/30 border-2 border-gray-500/30 flex items-center justify-center float-animation">
+                            <i class="fas fa-power-off text-6xl text-gray-400"></i>
+                        </div>
+                        <div>
+                            <h2 id="heroTitle" class="text-5xl font-black tech-font text-gray-400 mb-2">STANDBY MODE</h2>
+                            <p id="heroDescription" class="text-lg text-gray-500 font-medium">System ready and awaiting command</p>
+                        </div>
+                    </div>
+                    <div class="text-center lg:text-right">
+                        <div id="heroTimer" class="text-7xl font-black tech-font text-gray-600 neon-cyan">00:00</div>
+                        <p class="text-sm text-gray-500 mt-3 font-semibold tech-font">ACTIVE DURATION</p>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Manual Control Section -->
+            <section class="glass-card p-6 sm:p-8 mb-8">
+                <div class="flex items-center space-x-4 mb-6">
+                    <div class="metric-icon bg-gradient-to-br from-cyan-500/20 to-green-500/20 border-cyan-400/30">
+                        <i class="fas fa-gamepad text-cyan-400"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-2xl font-bold tech-font neon-cyan">MANUAL CONTROL</h3>
+                        <p class="text-sm text-gray-400">Direct system operation</p>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                    <!-- Start Button -->
+                    <button id="btnStart" class="cyber-button">
+                        <div class="flex items-center justify-center space-x-3">
+                            <i class="fas fa-play-circle text-2xl"></i>
+                            <span>START WATERING</span>
+                        </div>
+                    </button>
+                    
+                    <!-- Stop Button -->
+                    <button id="btnStop" class="cyber-button cyber-button-stop" disabled>
+                        <div class="flex items-center justify-center space-x-3">
+                            <i class="fas fa-stop-circle text-2xl"></i>
+                            <span>STOP WATERING</span>
+                        </div>
+                    </button>
+                </div>
+                
+                <!-- Mode Selector -->
+                <div class="p-5 bg-white/5 rounded-xl border border-white/10">
+                    <label class="block text-sm font-bold text-gray-300 mb-3 tech-font">OPERATION MODE:</label>
+                    <div class="flex flex-wrap gap-3">
+                        <button class="mode-btn" data-mode="auto">
+                            <i class="fas fa-robot mr-2"></i>AUTOMATIC
+                        </button>
+                        <button class="mode-btn active" data-mode="manual">
+                            <i class="fas fa-hand-pointer mr-2"></i>MANUAL
+                        </button>
+                        <button class="mode-btn" data-mode="scheduled">
+                            <i class="far fa-clock mr-2"></i>SCHEDULED
+                        </button>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Monitoring Cards Grid -->
+            <section class="mb-8">
+                <div class="flex items-center space-x-4 mb-6">
+                    <div class="metric-icon bg-gradient-to-br from-green-500/20 to-cyan-500/20 border-green-400/30">
+                        <i class="fas fa-chart-line text-green-400"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-2xl font-bold tech-font neon-green">REAL-TIME MONITORING</h3>
+                        <p class="text-sm text-gray-400">Live sensor data & analytics</p>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                    
+                    <!-- Soil Moisture Card -->
+                    <div class="glass-card p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="metric-icon bg-gradient-to-br from-green-500/20 to-emerald-500/20 border-green-400/30">
+                                <i class="fas fa-tint text-green-400"></i>
+                            </div>
+                            <div class="text-right">
+                                <h4 class="font-bold text-gray-300 tech-font text-sm">SOIL MOISTURE</h4>
+                                <p class="text-xs text-gray-500">Kelembaban Tanah</p>
+                            </div>
+                        </div>
+                        
+                        <div class="text-center my-6">
+                            <div class="text-6xl font-black neon-green tech-font value-animated" id="soilMoistureValue">65</div>
+                            <div class="text-2xl font-bold text-gray-400">%</div>
+                            <div class="mt-3 px-4 py-2 rounded-full text-sm font-bold inline-block" style="background: rgba(0, 255, 136, 0.2); color: #00FF88;" id="soilMoistureStatus">
+                                OPTIMAL
+                            </div>
+                        </div>
+                        
+                        <div class="progress-container">
+                            <div class="progress-bar" id="soilMoistureBar" style="width: 65%"></div>
+                        </div>
+                        
+                        <div class="mt-3 flex justify-between text-xs text-gray-500 font-semibold tech-font">
+                            <span>DRY</span>
+                            <span class="text-green-400">40-70%</span>
+                            <span>WET</span>
+                        </div>
+                    </div>
+                    
+                    <!-- pH Level Card -->
+                    <div class="glass-card p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="metric-icon bg-gradient-to-br from-yellow-500/20 to-orange-500/20 border-yellow-400/30">
+                                <i class="fas fa-flask text-yellow-400"></i>
+                            </div>
+                            <div class="text-right">
+                                <h4 class="font-bold text-gray-300 tech-font text-sm">SOIL pH</h4>
+                                <p class="text-xs text-gray-500">pH Tanah</p>
+                            </div>
+                        </div>
+                        
+                        <div class="text-center my-6">
+                            <div class="text-6xl font-black neon-gold tech-font value-animated" id="phValue">6.8</div>
+                            <div class="mt-3 px-4 py-2 rounded-full text-sm font-bold inline-block" style="background: rgba(255, 215, 0, 0.2); color: #FFD700;" id="phStatus">
+                                IDEAL
+                            </div>
+                        </div>
+                        
+                        <div class="ph-scale mb-3">
+                            <div class="ph-marker" id="phIndicator"></div>
+                        </div>
+                        
+                        <div class="flex justify-between text-xs text-gray-500 font-semibold tech-font mt-2">
+                            <span>ACIDIC</span>
+                            <span class="text-yellow-400">6.0-7.5</span>
+                            <span>ALKALINE</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Operating Hours Card -->
+                    <div class="glass-card p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="metric-icon bg-gradient-to-br from-blue-500/20 to-cyan-500/20 border-blue-400/30">
+                                <i class="fas fa-clock text-blue-400"></i>
+                            </div>
+                            <div class="text-right">
+                                <h4 class="font-bold text-gray-300 tech-font text-sm">OPERATING HOURS</h4>
+                                <p class="text-xs text-gray-500">Jam Kerja Robot</p>
+                            </div>
+                        </div>
+                        
+                        <div class="text-center my-6">
+                            <div class="text-6xl font-black text-blue-400 tech-font value-animated" id="totalHoursValue">127</div>
+                            <div class="text-xl font-bold text-gray-400 tech-font">HOURS</div>
+                        </div>
+                        
+                        <div class="space-y-2">
+                            <div class="flex justify-between items-center p-3 bg-blue-500/10 rounded-lg border border-blue-400/20">
+                                <span class="text-sm text-gray-400 font-semibold">Today:</span>
+                                <span class="font-black text-blue-400 tech-font" id="todayHours">2.5 hrs</span>
+                            </div>
+                            <div class="flex justify-between items-center p-3 bg-white/5 rounded-lg border border-white/10">
+                                <span class="text-sm text-gray-400 font-semibold">Week:</span>
+                                <span class="font-black text-gray-300 tech-font" id="weekHours">18.3 hrs</span>
+                            </div>
+                            <div class="flex justify-between items-center p-3 bg-white/5 rounded-lg border border-white/10">
+                                <span class="text-sm text-gray-400 font-semibold">Avg/Day:</span>
+                                <span class="font-black text-gray-300 tech-font" id="avgHours">2.6 hrs</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Battery Status Card -->
+                    <div class="glass-card p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="metric-icon bg-gradient-to-br from-emerald-500/20 to-green-500/20 border-emerald-400/30">
+                                <i class="fas fa-battery-three-quarters text-emerald-400" id="batteryIcon"></i>
+                            </div>
+                            <div class="text-right">
+                                <h4 class="font-bold text-gray-300 tech-font text-sm">BATTERY</h4>
+                                <p class="text-xs text-gray-500">Status Baterai</p>
+                            </div>
+                        </div>
+                        
+                        <div class="text-center my-6">
+                            <div class="text-6xl font-black text-emerald-400 tech-font value-animated" id="batteryValue">85</div>
+                            <div class="text-2xl font-bold text-gray-400">%</div>
+                            <div class="mt-3 px-4 py-2 rounded-full text-sm font-bold inline-block" style="background: rgba(16, 185, 129, 0.2); color: #10B981;" id="batteryStatus">
+                                EXCELLENT
+                            </div>
+                        </div>
+                        
+                        <div class="progress-container">
+                            <div class="progress-bar" id="batteryBar" style="width: 85%"></div>
+                        </div>
+                        
+                        <div class="mt-4 space-y-2">
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm text-gray-400 font-semibold">Est. Time:</span>
+                                <span class="font-black text-emerald-400 tech-font" id="batteryTime">8-10 hrs</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm text-gray-400 font-semibold">Voltage:</span>
+                                <span class="font-black text-gray-300 tech-font" id="batteryVoltage">12.4V</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Water Tank Card -->
+                    <div class="glass-card p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="metric-icon bg-gradient-to-br from-cyan-500/20 to-blue-500/20 border-cyan-400/30">
+                                <i class="fas fa-water text-cyan-400"></i>
+                            </div>
+                            <div class="text-right">
+                                <h4 class="font-bold text-gray-300 tech-font text-sm">WATER TANK</h4>
+                                <p class="text-xs text-gray-500">Tangki Air</p>
+                            </div>
+                        </div>
+                        
+                        <div class="water-tank mb-4">
+                            <div class="water-fill" id="waterLevel" style="height: 72%">
+                                <div class="water-wave"></div>
+                                <div class="water-wave" style="animation-delay: -1.5s; opacity: 0.5;"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="text-center">
+                            <div class="text-5xl font-black text-cyan-400 tech-font value-animated" id="waterPercentage">72</div>
+                            <div class="text-xl font-bold text-gray-400">%</div>
+                            <div class="mt-2 text-sm text-gray-400">
+                                <span class="font-black text-cyan-400 tech-font" id="waterVolume">7.2L</span> / 10L
+                            </div>
+                            <div class="mt-3 px-4 py-2 rounded-full text-sm font-bold inline-block" style="background: rgba(0, 217, 255, 0.2); color: #00D9FF;" id="waterStatus">
+                                SUFFICIENT
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Temperature Card -->
+                    <div class="glass-card p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="metric-icon bg-gradient-to-br from-red-500/20 to-orange-500/20 border-red-400/30">
+                                <i class="fas fa-thermometer-half text-red-400"></i>
+                            </div>
+                            <div class="text-right">
+                                <h4 class="font-bold text-gray-300 tech-font text-sm">TEMPERATURE</h4>
+                                <p class="text-xs text-gray-500">Suhu Lingkungan</p>
+                            </div>
+                        </div>
+                        
+                        <div class="text-center my-6">
+                            <div class="text-6xl font-black text-orange-400 tech-font value-animated" id="temperatureValue">28</div>
+                            <div class="text-2xl font-bold text-gray-400">°C</div>
+                            <div class="mt-3 px-4 py-2 rounded-full text-sm font-bold inline-block" style="background: rgba(34, 197, 94, 0.2); color: #22C55E;" id="temperatureStatus">
+                                NORMAL
+                            </div>
+                        </div>
+                        
+                        <div class="flex justify-around">
+                            <div class="text-center">
+                                <div class="text-3xl font-black text-blue-400 tech-font" id="tempMin">24°</div>
+                                <div class="text-xs text-gray-500 font-semibold tech-font">MIN</div>
+                            </div>
+                            <div class="w-px bg-white/10"></div>
+                            <div class="text-center">
+                                <div class="text-3xl font-black text-red-400 tech-font" id="tempMax">32°</div>
+                                <div class="text-xs text-gray-500 font-semibold tech-font">MAX</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Air Humidity Card -->
+                    <div class="glass-card p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="metric-icon bg-gradient-to-br from-indigo-500/20 to-purple-500/20 border-indigo-400/30">
+                                <i class="fas fa-cloud text-indigo-400"></i>
+                            </div>
+                            <div class="text-right">
+                                <h4 class="font-bold text-gray-300 tech-font text-sm">AIR HUMIDITY</h4>
+                                <p class="text-xs text-gray-500">Kelembaban Udara</p>
+                            </div>
+                        </div>
+                        
+                        <div class="text-center my-6">
+                            <div class="text-6xl font-black text-indigo-400 tech-font value-animated" id="humidityValue">65</div>
+                            <div class="text-2xl font-bold text-gray-400">%</div>
+                            <div class="mt-3 px-4 py-2 rounded-full text-sm font-bold inline-block" style="background: rgba(99, 102, 241, 0.2); color: #6366F1;" id="humidityStatus">
+                                COMFORTABLE
+                            </div>
+                        </div>
+                        
+                        <div class="progress-container">
+                            <div class="progress-bar" id="humidityBar" style="width: 65%; background: linear-gradient(90deg, #6366F1, #8B5CF6);"></div>
+                        </div>
+                        
+                        <div class="mt-3 text-center text-xs text-gray-500 font-semibold tech-font">
+                            IDEAL RANGE: 40-70%
+                        </div>
+                    </div>
+                    
+                    <!-- Light Intensity Card -->
+                    <div class="glass-card p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="metric-icon bg-gradient-to-br from-yellow-500/20 to-amber-500/20 border-yellow-400/30">
+                                <i class="fas fa-sun text-yellow-400"></i>
+                            </div>
+                            <div class="text-right">
+                                <h4 class="font-bold text-gray-300 tech-font text-sm">LIGHT LEVEL</h4>
+                                <p class="text-xs text-gray-500">Intensitas Cahaya</p>
+                            </div>
+                        </div>
+                        
+                        <div class="text-center my-6">
+                            <div class="text-6xl font-black text-yellow-400 tech-font value-animated" id="lightValue">850</div>
+                            <div class="text-xl font-bold text-gray-400 tech-font">LUX</div>
+                            <div class="mt-3 px-4 py-2 rounded-full text-sm font-bold inline-block" style="background: rgba(250, 204, 21, 0.2); color: #FACC15;" id="lightStatus">
+                                BRIGHT
+                            </div>
+                        </div>
+                        
+                        <div class="space-y-2">
+                            <div class="flex justify-between items-center p-3 bg-white/5 rounded-lg border border-white/10">
+                                <span class="text-sm text-gray-400 font-semibold">Condition:</span>
+                                <span class="font-black text-yellow-400 tech-font" id="lightCondition">SUNNY</span>
+                            </div>
+                            <div class="flex justify-between items-center p-3 bg-white/5 rounded-lg border border-white/10">
+                                <span class="text-sm text-gray-400 font-semibold">UV Index:</span>
+                                <span class="font-black text-gray-300 tech-font" id="uvIndex">5 (MOD)</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                </div>
+            </section>
+            
+            <!-- Analytics Charts Section -->
+            <section class="mb-8">
+                <div class="flex items-center space-x-4 mb-6">
+                    <div class="metric-icon bg-gradient-to-br from-pink-500/20 to-red-500/20 border-pink-400/30">
+                        <i class="fas fa-chart-area text-pink-400"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-2xl font-bold tech-font" style="color: #FF6B9D;">ANALYTICS & HISTORICAL DATA</h3>
+                        <p class="text-sm text-gray-400">Trend analysis & insights</p>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    
+                    <!-- Soil Moisture Chart -->
+                    <div class="chart-wrapper">
+                        <div class="flex items-center justify-between mb-4">
+                            <h4 class="text-lg font-bold text-gray-300 tech-font">SOIL MOISTURE TREND</h4>
+                            <select id="moistureChartPeriod" class="tech-font text-sm">
+                                <option value="24h">LAST 24 HOURS</option>
+                                <option value="7d">LAST 7 DAYS</option>
+                                <option value="30d">LAST 30 DAYS</option>
+                            </select>
+                        </div>
+                        <div class="relative h-[300px]">
+                            <canvas id="moistureChart"></canvas>
+                        </div>
+                    </div>
+                    
+                    <!-- Temperature & Humidity Chart -->
+                    <div class="chart-wrapper">
+                        <div class="flex items-center justify-between mb-4">
+                            <h4 class="text-lg font-bold text-gray-300 tech-font">TEMPERATURE & HUMIDITY</h4>
+                            <select id="tempChartPeriod" class="tech-font text-sm">
+                                <option value="24h">LAST 24 HOURS</option>
+                                <option value="7d">LAST 7 DAYS</option>
+                                <option value="30d">LAST 30 DAYS</option>
+                            </select>
+                        </div>
+                        <div class="relative h-[300px]">
+                            <canvas id="tempHumidityChart"></canvas>
+                        </div>
+                    </div>
+                    
+                    <!-- Water Usage Chart -->
+                    <div class="chart-wrapper">
+                        <div class="flex items-center justify-between mb-4">
+                            <h4 class="text-lg font-bold text-gray-300 tech-font">WATER USAGE STATISTICS</h4>
+                            <select id="waterChartPeriod" class="tech-font text-sm">
+                                <option value="7d">LAST 7 DAYS</option>
+                                <option value="30d">LAST 30 DAYS</option>
+                                <option value="90d">LAST 90 DAYS</option>
+                            </select>
+                        </div>
+                        <div class="relative h-[300px]">
+                            <canvas id="waterUsageChart"></canvas>
+                        </div>
+                    </div>
+                    
+                    <!-- Battery Level Chart -->
+                    <div class="chart-wrapper">
+                        <div class="flex items-center justify-between mb-4">
+                            <h4 class="text-lg font-bold text-gray-300 tech-font">BATTERY LEVEL HISTORY</h4>
+                            <select id="batteryChartPeriod" class="tech-font text-sm">
+                                <option value="24h">LAST 24 HOURS</option>
+                                <option value="7d">LAST 7 DAYS</option>
+                                <option value="30d">LAST 30 DAYS</option>
+                            </select>
+                        </div>
+                        <div class="relative h-[300px]">
+                            <canvas id="batteryChart"></canvas>
+                        </div>
+                    </div>
+                    
+                </div>
+            </section>
+            
+            <!-- Activity Log Section -->
+            <section class="mb-8">
+                <div class="glass-card p-6 sm:p-8">
+                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+                        <div class="flex items-center space-x-4">
+                            <div class="metric-icon bg-gradient-to-br from-teal-500/20 to-cyan-500/20 border-teal-400/30">
+                                <i class="fas fa-list-ul text-teal-400"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-2xl font-bold tech-font text-teal-400">ACTIVITY LOG</h3>
+                                <p class="text-sm text-gray-400">System events & history</p>
+                            </div>
+                        </div>
+                        <button id="btnClearLog" class="px-5 py-3 bg-red-500/20 hover:bg-red-500/30 border border-red-400/30 text-red-400 rounded-xl text-sm font-bold tech-font transition-all hover:scale-105">
+                            <i class="fas fa-trash-alt mr-2"></i>CLEAR LOG
+                        </button>
+                    </div>
+                    
+                    <div class="space-y-3 max-h-96 overflow-y-auto" id="activityLog">
+                        <!-- Activity log items will be inserted here dynamically -->
+                        <div class="activity-item">
+                            <div class="flex items-start space-x-4">
+                                <div class="activity-icon bg-gradient-to-br from-blue-500/20 to-cyan-500/20 border border-blue-400/30 text-blue-400">
+                                    <i class="fas fa-info-circle"></i>
+                                </div>
+                                <div class="flex-1">
+                                    <div class="flex items-center justify-between flex-wrap gap-2">
+                                        <span class="font-bold text-gray-300 tech-font">SYSTEM INITIALIZED</span>
+                                        <span class="text-xs text-gray-500 tech-font" id="initTime">JUST NOW</span>
+                                    </div>
+                                    <p class="text-sm text-gray-400 mt-1">Dashboard loaded successfully. All sensors online and operational.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Statistics Summary -->
+            <section class="mb-8">
+                <div class="glass-card p-6 sm:p-8">
+                    <div class="flex items-center space-x-4 mb-6">
+                        <div class="metric-icon bg-gradient-to-br from-orange-500/20 to-red-500/20 border-orange-400/30">
+                            <i class="fas fa-chart-pie text-orange-400"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-2xl font-bold tech-font text-orange-400">SYSTEM STATISTICS</h3>
+                            <p class="text-sm text-gray-400">Performance metrics & overview</p>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <div class="stat-badge glow-border-green">
+                            <div class="flex items-center space-x-3 mb-3">
+                                <i class="fas fa-check-circle text-green-400 text-xl"></i>
+                                <span class="text-sm font-bold text-gray-300 tech-font">TOTAL CYCLES</span>
+                            </div>
+                            <div class="text-4xl font-black text-green-400 tech-font" id="statTotalWatering">247</div>
+                            <div class="text-xs text-gray-500 mt-2 tech-font">COMPLETED</div>
+                        </div>
+                        
+                        <div class="stat-badge glow-border-cyan">
+                            <div class="flex items-center space-x-3 mb-3">
+                                <i class="fas fa-water text-cyan-400 text-xl"></i>
+                                <span class="text-sm font-bold text-gray-300 tech-font">WATER USED</span>
+                            </div>
+                            <div class="text-4xl font-black text-cyan-400 tech-font" id="statWaterUsed">1,458</div>
+                            <div class="text-xs text-gray-500 mt-2 tech-font">LITERS TOTAL</div>
+                        </div>
+                        
+                        <div class="stat-badge" style="box-shadow: 0 0 20px rgba(168, 85, 247, 0.4), 0 0 40px rgba(168, 85, 247, 0.2);">
+                            <div class="flex items-center space-x-3 mb-3">
+                                <i class="fas fa-bolt text-purple-400 text-xl"></i>
+                                <span class="text-sm font-bold text-gray-300 tech-font">ENERGY USED</span>
+                            </div>
+                            <div class="text-4xl font-black text-purple-400 tech-font" id="statEnergyUsed">89.5</div>
+                            <div class="text-xs text-gray-500 mt-2 tech-font">kWh CONSUMED</div>
+                        </div>
+                        
+                        <div class="stat-badge glow-border-gold">
+                            <div class="flex items-center space-x-3 mb-3">
+                                <i class="fas fa-calendar-check text-yellow-400 text-xl"></i>
+                                <span class="text-sm font-bold text-gray-300 tech-font">UPTIME</span>
+                            </div>
+                            <div class="text-4xl font-black text-yellow-400 tech-font" id="statUptime">99.2</div>
+                            <div class="text-xs text-gray-500 mt-2 tech-font">% AVAILABILITY</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+        </main>
+        
+        <!-- Footer -->
+        <footer class="footer-glass py-8 mt-12">
+            <div class="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex flex-col md:flex-row items-center justify-between gap-6">
+                    <div class="flex items-center space-x-4">
+                        <div class="w-12 h-12 bg-gradient-to-br from-cyan-500 to-green-500 rounded-xl flex items-center justify-center rotate-medium">
+                            <i class="fas fa-robot text-white text-2xl"></i>
+                        </div>
+                        <div>
+                            <p class="font-bold text-lg gradient-text-animated tech-font">SMART PLANT WATERING SYSTEM</p>
+                            <p class="text-sm text-gray-400">Advanced IoT Solution for Modern Agriculture</p>
+                        </div>
+                    </div>
+                    
+                    <div class="text-center md:text-right">
+                        <p class="text-sm text-gray-400">© 2025 <span class="font-bold text-cyan-400">Team The Founder Volatile</span></p>
+                        <p class="text-xs text-gray-500 mt-1">Developed with <span class="text-red-500">❤️</span> for Robotics Competition</p>
+                    </div>
+                </div>
+                
+                <div class="mt-6 pt-6 border-t border-white/10 text-center">
+                    <div class="flex flex-wrap justify-center gap-6 text-sm text-gray-400">
+                        <a href="#" class="hover:text-cyan-400 transition tech-font"><i class="fas fa-book mr-2"></i>DOCUMENTATION</a>
+                        <a href="#" class="hover:text-cyan-400 transition tech-font"><i class="fas fa-code mr-2"></i>API REFERENCE</a>
+                        <a href="#" class="hover:text-cyan-400 transition tech-font"><i class="fas fa-life-ring mr-2"></i>SUPPORT</a>
+                        <a href="#" class="hover:text-cyan-400 transition tech-font"><i class="fab fa-github mr-2"></i>GITHUB</a>
+                    </div>
+                </div>
+            </div>
+        </footer>
+        
+    </div>
+    
+    <!-- Toast Notification Container -->
+    <div id="toastContainer"></div>
+    
+    <!-- JavaScript -->
+    <script>
+        // ============================================
+        // CONFIGURATION & CONSTANTS
+        // ============================================
+        
+        const CONFIG = {
+            updateInterval: 3000,
+            chartUpdateInterval: 10000,
+            maxLogEntries: 50,
+            maxDataPoints: 50,
+            storageKeys: {
+                sensorData: 'plantWatering_sensorData_v2',
+                activityLog: 'plantWatering_activityLog_v2',
+                statistics: 'plantWatering_statistics_v2',
+                systemState: 'plantWatering_systemState_v2'
+            }
+        };
+        
+        // ============================================
+        // STATE MANAGEMENT
+        // ============================================
+        
+        let systemState = {
+            isWatering: false,
+            mode: 'manual',
+            startTime: null,
+            duration: 0,
+            isOnline: true
+        };
+        
+        let sensorData = {
+            soilMoisture: 65,
+            pH: 6.8,
+            temperature: 28,
+            humidity: 65,
+            battery: 85,
+            waterLevel: 72,
+            lightLevel: 850,
+            operatingHours: 127
+        };
+        
+        let charts = {
+            moisture: null,
+            tempHumidity: null,
+            waterUsage: null,
+            battery: null
+        };
+        
+        // ============================================
+        // UTILITY FUNCTIONS
+        // ============================================
+        
+        function formatNumber(num) {
+            return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        }
+        
+        function formatDate(date) {
+            const options = { 
+                year: 'numeric', 
+                month: 'short', 
+                day: 'numeric', 
+                hour: '2-digit', 
+                minute: '2-digit',
+                second: '2-digit'
+            };
+            return date.toLocaleDateString('en-US', options);
+        }
+        
+        function getRelativeTime(timestamp) {
+            const now = Date.now();
+            const diff = now - timestamp;
+            const seconds = Math.floor(diff / 1000);
+            const minutes = Math.floor(seconds / 60);
+            const hours = Math.floor(minutes / 60);
+            const days = Math.floor(hours / 24);
+            
+            if (seconds < 60) return 'JUST NOW';
+            if (minutes < 60) return `${minutes}M AGO`;
+            if (hours < 24) return `${hours}H AGO`;
+            return `${days}D AGO`;
+        }
+        
+        function randomInRange(min, max, decimals = 0) {
+            const value = Math.random() * (max - min) + min;
+            return decimals > 0 ? parseFloat(value.toFixed(decimals)) : Math.round(value);
+        }
+        
+        // ============================================
+        // LOCAL STORAGE FUNCTIONS
+        // ============================================
+        
+        function saveToStorage(key, data) {
+            try {
+                localStorage.setItem(key, JSON.stringify(data));
+            } catch (e) {
+                console.error('Error saving to localStorage:', e);
+            }
+        }
+        
+        function loadFromStorage(key, defaultValue = null) {
+            try {
+                const data = localStorage.getItem(key);
+                return data ? JSON.parse(data) : defaultValue;
+            } catch (e) {
+                console.error('Error loading from localStorage:', e);
+                return defaultValue;
+            }
+        }
+        
+        function saveSensorDataPoint() {
+            const dataPoints = loadFromStorage(CONFIG.storageKeys.sensorData, []);
+            const newPoint = {
+                timestamp: Date.now(),
+                ...sensorData
+            };
+            
+            dataPoints.push(newPoint);
+            
+            if (dataPoints.length > CONFIG.maxDataPoints) {
+                dataPoints.shift();
+            }
+            
+            saveToStorage(CONFIG.storageKeys.sensorData, dataPoints);
+        }
+        
+        function saveActivityLog(type, message, icon = 'info-circle', color = 'blue') {
+            const logs = loadFromStorage(CONFIG.storageKeys.activityLog, []);
+            const newLog = {
+                timestamp: Date.now(),
+                type,
+                message,
+                icon,
+                color
+            };
+            
+            logs.unshift(newLog);
+            
+            if (logs.length > CONFIG.maxLogEntries) {
+                logs.pop();
+            }
+            
+            saveToStorage(CONFIG.storageKeys.activityLog, logs);
+            renderActivityLog();
+        }
+        
+        function updateStatistics(stat, value) {
+            const stats = loadFromStorage(CONFIG.storageKeys.statistics, {
+                totalWatering: 247,
+                waterUsed: 1458,
+                energyUsed: 89.5,
+                uptime: 99.2
+            });
+            
+            if (stat in stats) {
+                stats[stat] = value;
+                saveToStorage(CONFIG.storageKeys.statistics, stats);
+                renderStatistics(stats);
+            }
+        }
+        
+        // ============================================
+        // UI UPDATE FUNCTIONS
+        // ============================================
+        
+        function updateDateTime() {
+            const now = new Date();
+            document.getElementById('currentDateTime').textContent = formatDate(now).toUpperCase();
+        }
+        
+        let lastUpdateTime = Date.now();
+        function updateLastUpdateTime() {
+            document.getElementById('lastUpdate').textContent = `Last update: ${getRelativeTime(lastUpdateTime)}`;
+        }
+        
+        function updateHeroStatus() {
+            const heroSection = document.getElementById('heroStatus');
+            const heroIcon = document.getElementById('heroIcon');
+            const heroTitle = document.getElementById('heroTitle');
+            const heroDescription = document.getElementById('heroDescription');
+            const heroTimer = document.getElementById('heroTimer');
+            
+            if (systemState.isWatering) {
+                heroSection.className = 'hero-banner active p-8 mb-8';
+                heroIcon.className = 'w-28 h-28 rounded-3xl bg-gradient-to-br from-cyan-500/30 to-green-500/30 border-2 border-green-400/50 flex items-center justify-center float-animation glow-border-green';
+                heroIcon.innerHTML = '<i class="fas fa-tint text-6xl text-green-400 water-drop"></i>';
+                heroTitle.textContent = 'ACTIVE WATERING';
+                heroTitle.className = 'text-5xl font-black tech-font neon-green mb-2';
+                heroDescription.textContent = 'System is actively watering the plants';
+                heroDescription.className = 'text-lg text-green-400 font-medium';
+                
+                const elapsed = Math.floor((Date.now() - systemState.startTime) / 1000);
+                const minutes = Math.floor(elapsed / 60);
+                const seconds = elapsed % 60;
+                heroTimer.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+                heroTimer.className = 'text-7xl font-black tech-font neon-green';
+            } else {
+                heroSection.className = 'hero-banner p-8 mb-8';
+                heroIcon.className = 'w-28 h-28 rounded-3xl bg-gradient-to-br from-gray-600/30 to-gray-800/30 border-2 border-gray-500/30 flex items-center justify-center float-animation';
+                heroIcon.innerHTML = '<i class="fas fa-power-off text-6xl text-gray-400"></i>';
+                heroTitle.textContent = 'STANDBY MODE';
+                heroTitle.className = 'text-5xl font-black tech-font text-gray-400 mb-2';
+                heroDescription.textContent = 'System ready and awaiting command';
+                heroDescription.className = 'text-lg text-gray-500 font-medium';
+                heroTimer.textContent = '00:00';
+                heroTimer.className = 'text-7xl font-black tech-font text-gray-600 neon-cyan';
+            }
+        }
+        
+        function updateSoilMoisture(value) {
+            document.getElementById('soilMoistureValue').textContent = value;
+            document.getElementById('soilMoistureBar').style.width = value + '%';
+            
+            const statusElement = document.getElementById('soilMoistureStatus');
+            if (value < 40) {
+                statusElement.textContent = 'DRY';
+                statusElement.style.background = 'rgba(239, 68, 68, 0.2)';
+                statusElement.style.color = '#EF4444';
+            } else if (value <= 70) {
+                statusElement.textContent = 'OPTIMAL';
+                statusElement.style.background = 'rgba(0, 255, 136, 0.2)';
+                statusElement.style.color = '#00FF88';
+            } else {
+                statusElement.textContent = 'TOO WET';
+                statusElement.style.background = 'rgba(59, 130, 246, 0.2)';
+                statusElement.style.color = '#3B82F6';
+            }
+        }
+        
+        function updatePH(value) {
+            document.getElementById('phValue').textContent = value.toFixed(1);
+            
+            const position = (value / 14) * 100;
+            document.getElementById('phIndicator').style.left = `${position}%`;
+            
+            const statusElement = document.getElementById('phStatus');
+            if (value >= 6.0 && value <= 7.5) {
+                statusElement.textContent = 'IDEAL';
+                statusElement.style.background = 'rgba(255, 215, 0, 0.2)';
+                statusElement.style.color = '#FFD700';
+            } else if (value < 6.0) {
+                statusElement.textContent = 'TOO ACIDIC';
+                statusElement.style.background = 'rgba(239, 68, 68, 0.2)';
+                statusElement.style.color = '#EF4444';
+            } else {
+                statusElement.textContent = 'TOO ALKALINE';
+                statusElement.style.background = 'rgba(59, 130, 246, 0.2)';
+                statusElement.style.color = '#3B82F6';
+            }
+        }
+        
+        function updateBattery(value) {
+            document.getElementById('batteryValue').textContent = value;
+            document.getElementById('batteryBar').style.width = value + '%';
+            
+            const icon = document.getElementById('batteryIcon');
+            const statusElement = document.getElementById('batteryStatus');
+            const timeElement = document.getElementById('batteryTime');
+            
+            if (value > 80) {
+                icon.className = 'fas fa-battery-full text-emerald-400';
+                statusElement.textContent = 'EXCELLENT';
+                statusElement.style.background = 'rgba(16, 185, 129, 0.2)';
+                statusElement.style.color = '#10B981';
+                timeElement.textContent = '8-10 hrs';
+            } else if (value > 60) {
+                icon.className = 'fas fa-battery-three-quarters text-green-400';
+                statusElement.textContent = 'GOOD';
+                statusElement.style.background = 'rgba(34, 197, 94, 0.2)';
+                statusElement.style.color = '#22C55E';
+                timeElement.textContent = '6-8 hrs';
+            } else if (value > 40) {
+                icon.className = 'fas fa-battery-half text-yellow-400';
+                statusElement.textContent = 'MEDIUM';
+                statusElement.style.background = 'rgba(234, 179, 8, 0.2)';
+                statusElement.style.color = '#EAB308';
+                timeElement.textContent = '4-6 hrs';
+            } else if (value > 20) {
+                icon.className = 'fas fa-battery-quarter text-orange-400';
+                statusElement.textContent = 'LOW';
+                statusElement.style.background = 'rgba(249, 115, 22, 0.2)';
+                statusElement.style.color = '#F97316';
+                timeElement.textContent = '2-4 hrs';
+                
+                if (value === 40) {
+                    showAlert('warning', 'Battery level is getting low. Consider charging soon.');
+                }
+            } else {
+                icon.className = 'fas fa-battery-empty text-red-400 pulse-animation';
+                statusElement.textContent = 'CRITICAL';
+                statusElement.style.background = 'rgba(239, 68, 68, 0.2)';
+                statusElement.style.color = '#EF4444';
+                timeElement.textContent = '< 2 hrs';
+                
+                if (value === 20) {
+                    showAlert('error', 'Battery level critical! Please charge immediately.');
+                }
+            }
+            
+            const voltage = 10.5 + (value / 100) * 2.5;
+            document.getElementById('batteryVoltage').textContent = voltage.toFixed(1) + 'V';
+        }
+        
+        function updateWaterTank(value) {
+            document.getElementById('waterPercentage').textContent = value;
+            document.getElementById('waterLevel').style.height = value + '%';
+            
+            const volume = (value / 100) * 10;
+            document.getElementById('waterVolume').textContent = volume.toFixed(1) + 'L';
+            
+            const statusElement = document.getElementById('waterStatus');
+            if (value < 20) {
+                statusElement.textContent = 'VERY LOW';
+                statusElement.style.background = 'rgba(239, 68, 68, 0.2)';
+                statusElement.style.color = '#EF4444';
+                
+                if (value === 20) {
+                    showAlert('warning', 'Water tank is running low. Please refill soon.');
+                }
+            } else if (value < 40) {
+                statusElement.textContent = 'LOW';
+                statusElement.style.background = 'rgba(249, 115, 22, 0.2)';
+                statusElement.style.color = '#F97316';
+            } else if (value < 70) {
+                statusElement.textContent = 'SUFFICIENT';
+                statusElement.style.background = 'rgba(0, 217, 255, 0.2)';
+                statusElement.style.color = '#00D9FF';
+            } else {
+                statusElement.textContent = 'FULL';
+                statusElement.style.background = 'rgba(34, 197, 94, 0.2)';
+                statusElement.style.color = '#22C55E';
+            }
+        }
+        
+        function updateTemperature(value) {
+            document.getElementById('temperatureValue').textContent = value;
+            
+            const statusElement = document.getElementById('temperatureStatus');
+            if (value < 20) {
+                statusElement.textContent = 'COLD';
+                statusElement.style.background = 'rgba(59, 130, 246, 0.2)';
+                statusElement.style.color = '#3B82F6';
+            } else if (value <= 32) {
+                statusElement.textContent = 'NORMAL';
+                statusElement.style.background = 'rgba(34, 197, 94, 0.2)';
+                statusElement.style.color = '#22C55E';
+            } else {
+                statusElement.textContent = 'HOT';
+                statusElement.style.background = 'rgba(239, 68, 68, 0.2)';
+                statusElement.style.color = '#EF4444';
+            }
+        }
+        
+        function updateHumidity(value) {
+            document.getElementById('humidityValue').textContent = value;
+            document.getElementById('humidityBar').style.width = value + '%';
+            
+            const statusElement = document.getElementById('humidityStatus');
+            if (value < 40) {
+                statusElement.textContent = 'DRY';
+                statusElement.style.background = 'rgba(249, 115, 22, 0.2)';
+                statusElement.style.color = '#F97316';
+            } else if (value <= 70) {
+                statusElement.textContent = 'COMFORTABLE';
+                statusElement.style.background = 'rgba(99, 102, 241, 0.2)';
+                statusElement.style.color = '#6366F1';
+            } else {
+                statusElement.textContent = 'HUMID';
+                statusElement.style.background = 'rgba(59, 130, 246, 0.2)';
+                statusElement.style.color = '#3B82F6';
+            }
+        }
+        
+        function updateLightLevel(value) {
+            document.getElementById('lightValue').textContent = value;
+            
+            const statusElement = document.getElementById('lightStatus');
+            const conditionElement = document.getElementById('lightCondition');
+            
+            if (value < 100) {
+                statusElement.textContent = 'DARK';
+                statusElement.style.background = 'rgba(107, 114, 128, 0.2)';
+                statusElement.style.color = '#6B7280';
+                conditionElement.textContent = 'NIGHT';
+            } else if (value < 400) {
+                statusElement.textContent = 'DIM';
+                statusElement.style.background = 'rgba(156, 163, 175, 0.2)';
+                statusElement.style.color = '#9CA3AF';
+                conditionElement.textContent = 'CLOUDY';
+            } else if (value < 800) {
+                statusElement.textContent = 'MODERATE';
+                statusElement.style.background = 'rgba(250, 204, 21, 0.2)';
+                statusElement.style.color = '#FACC15';
+                conditionElement.textContent = 'PARTLY CLOUDY';
+            } else {
+                statusElement.textContent = 'BRIGHT';
+                statusElement.style.background = 'rgba(250, 204, 21, 0.2)';
+                statusElement.style.color = '#FACC15';
+                conditionElement.textContent = 'SUNNY';
+            }
+        }
+        
+        function updateOperatingHours(value) {
+            document.getElementById('totalHoursValue').textContent = value;
+            
+            const todayHours = randomInRange(1, 4, 1);
+            const weekHours = randomInRange(15, 25, 1);
+            const avgHours = (weekHours / 7).toFixed(1);
+            
+            document.getElementById('todayHours').textContent = todayHours + ' hrs';
+            document.getElementById('weekHours').textContent = weekHours + ' hrs';
+            document.getElementById('avgHours').textContent = avgHours + ' hrs';
+        }
+        
+        function renderActivityLog() {
+            const logs = loadFromStorage(CONFIG.storageKeys.activityLog, []);
+            const container = document.getElementById('activityLog');
+            
+            if (logs.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-12 text-gray-400">
+                        <i class="fas fa-inbox text-5xl mb-4 opacity-50"></i>
+                        <p class="tech-font">NO ACTIVITIES YET</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            const colorClasses = {
+                blue: { bg: 'from-blue-500/20 to-cyan-500/20', border: 'border-blue-400/30', text: 'text-blue-400' },
+                green: { bg: 'from-green-500/20 to-emerald-500/20', border: 'border-green-400/30', text: 'text-green-400' },
+                yellow: { bg: 'from-yellow-500/20 to-amber-500/20', border: 'border-yellow-400/30', text: 'text-yellow-400' },
+                red: { bg: 'from-red-500/20 to-orange-500/20', border: 'border-red-400/30', text: 'text-red-400' },
+                purple: { bg: 'from-purple-500/20 to-pink-500/20', border: 'border-purple-400/30', text: 'text-purple-400' },
+                gray: { bg: 'from-gray-500/20 to-slate-500/20', border: 'border-gray-400/30', text: 'text-gray-400' },
+                cyan: { bg: 'from-cyan-500/20 to-teal-500/20', border: 'border-cyan-400/30', text: 'text-cyan-400' }
+            };
+            
+            container.innerHTML = logs.map(log => {
+                const color = colorClasses[log.color] || colorClasses.blue;
+                return `
+                    <div class="activity-item">
+                        <div class="flex items-start space-x-4">
+                            <div class="activity-icon bg-gradient-to-br ${color.bg} border ${color.border} ${color.text}">
+                                <i class="fas fa-${log.icon}"></i>
+                            </div>
+                            <div class="flex-1">
+                                <div class="flex items-center justify-between flex-wrap gap-2">
+                                    <span class="font-bold text-gray-300 tech-font">${log.type.toUpperCase()}</span>
+                                    <span class="text-xs text-gray-500 tech-font">${getRelativeTime(log.timestamp)}</span>
+                                </div>
+                                <p class="text-sm text-gray-400 mt-1">${log.message}</p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        function renderStatistics(stats) {
+            document.getElementById('statTotalWatering').textContent = stats.totalWatering;
+            document.getElementById('statWaterUsed').textContent = formatNumber(stats.waterUsed);
+            document.getElementById('statEnergyUsed').textContent = stats.energyUsed.toFixed(1);
+            document.getElementById('statUptime').textContent = stats.uptime.toFixed(1);
+        }
+        
+        // ============================================
+        // NOTIFICATION FUNCTIONS
+        // ============================================
+        
+        function showAlert(type, message) {
+            const container = document.getElementById('alertContainer');
+            const alertId = 'alert-' + Date.now();
+            
+            const colors = {
+                info: { class: 'alert-info', icon: 'info-circle', color: '#00D9FF' },
+                success: { class: 'alert-success', icon: 'check-circle', color: '#00FF88' },
+                warning: { class: 'alert-warning', icon: 'exclamation-triangle', color: '#FFD700' },
+                error: { class: 'alert-error', icon: 'exclamation-circle', color: '#FF4444' }
+            };
+            
+            const config = colors[type] || colors.info;
+            
+            const alertHTML = `
+                <div id="${alertId}" class="alert-banner ${config.class}">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center space-x-4">
+                            <i class="fas fa-${config.icon} text-3xl" style="color: ${config.color}"></i>
+                            <p class="font-bold tech-font" style="color: ${config.color}">${message}</p>
+                        </div>
+                        <button onclick="dismissAlert('${alertId}')" class="text-3xl hover:opacity-70 transition text-gray-400">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            container.insertAdjacentHTML('beforeend', alertHTML);
+            
+            setTimeout(() => dismissAlert(alertId), 5000);
+        }
+        
+        function dismissAlert(alertId) {
+            const alert = document.getElementById(alertId);
+            if (alert) {
+                alert.style.animation = 'slideOutRight 0.5s ease-in';
+                setTimeout(() => alert.remove(), 500);
+            }
+        }
+        
+        function showToast(type, message) {
+            const container = document.getElementById('toastContainer');
+            const toastId = 'toast-' + Date.now();
+            
+            const colors = {
+                info: { bg: 'from-cyan-500 to-blue-500', icon: 'info-circle' },
+                success: { bg: 'from-green-500 to-emerald-500', icon: 'check-circle' },
+                warning: { bg: 'from-yellow-500 to-orange-500', icon: 'exclamation-triangle' },
+                error: { bg: 'from-red-500 to-red-600', icon: 'times-circle' }
+            };
+            
+            const config = colors[type] || colors.info;
+            
+            const toastHTML = `
+                <div id="${toastId}" class="toast">
+                    <div class="flex items-center space-x-4">
+                        <div class="w-12 h-12 rounded-xl bg-gradient-to-br ${config.bg} flex items-center justify-center">
+                            <i class="fas fa-${config.icon} text-white text-xl"></i>
+                        </div>
+                        <p class="font-bold text-gray-200 flex-1">${message}</p>
+                        <button onclick="dismissToast('${toastId}')" class="text-2xl hover:opacity-70 transition text-gray-400">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            container.insertAdjacentHTML('beforeend', toastHTML);
+            
+            setTimeout(() => dismissToast(toastId), 4000);
+        }
+        
+        function dismissToast(toastId) {
+            const toast = document.getElementById(toastId);
+            if (toast) {
+                toast.classList.add('toast-exit');
+                setTimeout(() => toast.remove(), 500);
+            }
+        }
+        
+        // ============================================
+        // CHART FUNCTIONS
+        // ============================================
+        
+        function initializeCharts() {
+            const chartOptions = {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'top',
+                        labels: {
+                            color: '#9CA3AF',
+                            font: {
+                                family: 'Orbitron',
+                                size: 11,
+                                weight: 'bold'
+                            },
+                            padding: 15
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(26, 35, 50, 0.95)',
+                        titleColor: '#00D9FF',
+                        bodyColor: '#E5E7EB',
+                        borderColor: 'rgba(0, 217, 255, 0.3)',
+                        borderWidth: 1,
+                        padding: 12,
+                        displayColors: true,
+                        titleFont: {
+                            family: 'Orbitron',
+                            size: 13,
+                            weight: 'bold'
+                        },
+                        bodyFont: {
+                            family: 'Poppins',
+                            size: 12
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        ticks: {
+                            color: '#6B7280',
+                            font: {
+                                family: 'Orbitron',
+                                size: 10
+                            }
+                        },
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.05)',
+                            drawBorder: false
+                        }
+                    },
+                    y: {
+                        ticks: {
+                            color: '#6B7280',
+                            font: {
+                                family: 'Orbitron',
+                                size: 10
+                            }
+                        },
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.05)',
+                            drawBorder: false
+                        }
+                    }
+                }
+            };
+            
+            // Soil Moisture Chart
+            const moistureCtx = document.getElementById('moistureChart').getContext('2d');
+            charts.moisture = new Chart(moistureCtx, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: 'SOIL MOISTURE (%)',
+                        data: [],
+                        borderColor: '#00FF88',
+                        backgroundColor: 'rgba(0, 255, 136, 0.1)',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.4,
+                        pointRadius: 5,
+                        pointHoverRadius: 7,
+                        pointBackgroundColor: '#00FF88',
+                        pointBorderColor: '#0A1929',
+                        pointBorderWidth: 2
+                    }]
+                },
+                options: {
+                    ...chartOptions,
+                    scales: {
+                        ...chartOptions.scales,
+                        y: {
+                            ...chartOptions.scales.y,
+                            beginAtZero: true,
+                            max: 100,
+                            ticks: {
+                                ...chartOptions.scales.y.ticks,
+                                callback: function(value) {
+                                    return value + '%';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // Temperature & Humidity Chart
+            const tempCtx = document.getElementById('tempHumidityChart').getContext('2d');
+            charts.tempHumidity = new Chart(tempCtx, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [
+                        {
+                            label: 'TEMPERATURE (°C)',
+                            data: [],
+                            borderColor: '#FF6B6B',
+                            backgroundColor: 'rgba(255, 107, 107, 0.1)',
+                            borderWidth: 3,
+                            fill: true,
+                            tension: 0.4,
+                            yAxisID: 'y',
+                            pointRadius: 5,
+                            pointHoverRadius: 7,
+                            pointBackgroundColor: '#FF6B6B',
+                            pointBorderColor: '#0A1929',
+                            pointBorderWidth: 2
+                        },
+                        {
+                            label: 'HUMIDITY (%)',
+                            data: [],
+                            borderColor: '#6366F1',
+                            backgroundColor: 'rgba(99, 102, 241, 0.1)',
+                            borderWidth: 3,
+                            fill: true,
+                            tension: 0.4,
+                            yAxisID: 'y1',
+                            pointRadius: 5,
+                            pointHoverRadius: 7,
+                            pointBackgroundColor: '#6366F1',
+                            pointBorderColor: '#0A1929',
+                            pointBorderWidth: 2
+                        }
+                    ]
+                },
+                options: {
+                    ...chartOptions,
+                    interaction: {
+                        mode: 'index',
+                        intersect: false,
+                    },
+                    scales: {
+                        x: chartOptions.scales.x,
+                        y: {
+                            type: 'linear',
+                            display: true,
+                            position: 'left',
+                            ticks: {
+                                color: '#6B7280',
+                                font: {
+                                    family: 'Orbitron',
+                                    size: 10
+                                }
+                            },
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.05)',
+                                drawBorder: false
+                            },
+                            title: {
+                                display: true,
+                                text: 'TEMP (°C)',
+                                color: '#FF6B6B',
+                                font: {
+                                    family: 'Orbitron',
+                                    size: 11,
+                                    weight: 'bold'
+                                }
+                            }
+                        },
+                        y1: {
+                            type: 'linear',
+                            display: true,
+                            position: 'right',
+                            ticks: {
+                                color: '#6B7280',
+                                font: {
+                                    family: 'Orbitron',
+                                    size: 10
+                                }
+                            },
+                            grid: {
+                                drawOnChartArea: false,
+                            },
+                            title: {
+                                display: true,
+                                text: 'HUMIDITY (%)',
+                                color: '#6366F1',
+                                font: {
+                                    family: 'Orbitron',
+                                    size: 11,
+                                    weight: 'bold'
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // Water Usage Chart
+            const waterCtx = document.getElementById('waterUsageChart').getContext('2d');
+            charts.waterUsage = new Chart(waterCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'],
+                    datasets: [{
+                        label: 'WATER USED (L)',
+                        data: [8.5, 7.2, 9.1, 6.8, 8.9, 7.5, 8.3],
+                        backgroundColor: 'rgba(0, 217, 255, 0.7)',
+                        borderColor: '#00D9FF',
+                        borderWidth: 2,
+                        borderRadius: 10,
+                        hoverBackgroundColor: 'rgba(0, 217, 255, 0.9)'
+                    }]
+                },
+                options: {
+                    ...chartOptions,
+                    scales: {
+                        ...chartOptions.scales,
+                        y: {
+                            ...chartOptions.scales.y,
+                            beginAtZero: true,
+                            ticks: {
+                                ...chartOptions.scales.y.ticks,
+                                callback: function(value) {
+                                    return value + 'L';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // Battery Level Chart
+            const batteryCtx = document.getElementById('batteryChart').getContext('2d');
+            charts.battery = new Chart(batteryCtx, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: 'BATTERY LEVEL (%)',
+                        data: [],
+                        borderColor: '#10B981',
+                        backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.4,
+                        pointRadius: 5,
+                        pointHoverRadius: 7,
+                        pointBackgroundColor: '#10B981',
+                        pointBorderColor: '#0A1929',
+                        pointBorderWidth: 2
+                    }]
+                },
+                options: {
+                    ...chartOptions,
+                    scales: {
+                        ...chartOptions.scales,
+                        y: {
+                            ...chartOptions.scales.y,
+                            beginAtZero: true,
+                            max: 100,
+                            ticks: {
+                                ...chartOptions.scales.y.ticks,
+                                callback: function(value) {
+                                    return value + '%';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+            
+            loadChartData();
+        }
+        
+        function loadChartData() {
+            const dataPoints = loadFromStorage(CONFIG.storageKeys.sensorData, []);
+            
+            if (dataPoints.length === 0) {
+                generateSampleData();
+                return;
+            }
+            
+            const recentData = dataPoints.slice(-20);
+            
+            charts.moisture.data.labels = recentData.map((d, i) => {
+                const date = new Date(d.timestamp);
+                return date.getHours() + ':' + String(date.getMinutes()).padStart(2, '0');
+            });
+            charts.moisture.data.datasets[0].data = recentData.map(d => d.soilMoisture);
+            charts.moisture.update();
+            
+            charts.tempHumidity.data.labels = recentData.map((d, i) => {
+                const date = new Date(d.timestamp);
+                return date.getHours() + ':' + String(date.getMinutes()).padStart(2, '0');
+            });
+            charts.tempHumidity.data.datasets[0].data = recentData.map(d => d.temperature);
+            charts.tempHumidity.data.datasets[1].data = recentData.map(d => d.humidity);
+            charts.tempHumidity.update();
+            
+            charts.battery.data.labels = recentData.map((d, i) => {
+                const date = new Date(d.timestamp);
+                return date.getHours() + ':' + String(date.getMinutes()).padStart(2, '0');
+            });
+            charts.battery.data.datasets[0].data = recentData.map(d => d.battery);
+            charts.battery.update();
+        }
+        
+        function generateSampleData() {
+            const now = Date.now();
+            const dataPoints = [];
+            
+            for (let i = 20; i >= 0; i--) {
+                dataPoints.push({
+                    timestamp: now - (i * 3600000),
+                    soilMoisture: randomInRange(50, 80),
+                    temperature: randomInRange(24, 32),
+                    humidity: randomInRange(55, 75),
+                    battery: 100 - (i * 2),
+                    pH: randomInRange(60, 75, 1) / 10,
+                    waterLevel: randomInRange(60, 90),
+                    lightLevel: randomInRange(300, 900),
+                    operatingHours: 127
+                });
+            }
+            
+            saveToStorage(CONFIG.storageKeys.sensorData, dataPoints);
+            loadChartData();
+        }
+        
+        function updateCharts() {
+            const timestamp = new Date();
+            const timeLabel = timestamp.getHours() + ':' + String(timestamp.getMinutes()).padStart(2, '0');
+            
+            if (charts.moisture.data.labels.length > 20) {
+                charts.moisture.data.labels.shift();
+                charts.moisture.data.datasets[0].data.shift();
+            }
+            charts.moisture.data.labels.push(timeLabel);
+            charts.moisture.data.datasets[0].data.push(sensorData.soilMoisture);
+            charts.moisture.update('none');
+            
+            if (charts.tempHumidity.data.labels.length > 20) {
+                charts.tempHumidity.data.labels.shift();
+                charts.tempHumidity.data.datasets[0].data.shift();
+                charts.tempHumidity.data.datasets[1].data.shift();
+            }
+            charts.tempHumidity.data.labels.push(timeLabel);
+            charts.tempHumidity.data.datasets[0].data.push(sensorData.temperature);
+            charts.tempHumidity.data.datasets[1].data.push(sensorData.humidity);
+            charts.tempHumidity.update('none');
+            
+            if (charts.battery.data.labels.length > 20) {
+                charts.battery.data.labels.shift();
+                charts.battery.data.datasets[0].data.shift();
+            }
+            charts.battery.data.labels.push(timeLabel);
+            charts.battery.data.datasets[0].data.push(sensorData.battery);
+            charts.battery.update('none');
+        }
+        
+        // ============================================
+        // SENSOR DATA SIMULATION
+        // ============================================
+        
+        function simulateSensorData() {
+            sensorData.soilMoisture = Math.max(0, Math.min(100, 
+                sensorData.soilMoisture + randomInRange(-2, 2)));
+            
+            sensorData.pH = Math.max(4.0, Math.min(9.0, 
+                sensorData.pH + randomInRange(-0.1, 0.1, 1)));
+            
+            sensorData.temperature = Math.max(20, Math.min(40, 
+                sensorData.temperature + randomInRange(-1, 1)));
+            
+            sensorData.humidity = Math.max(30, Math.min(90, 
+                sensorData.humidity + randomInRange(-2, 2)));
+            
+            sensorData.battery = Math.max(0, Math.min(100, 
+                sensorData.battery - 0.1));
+            
+            sensorData.waterLevel = Math.max(0, Math.min(100, 
+                sensorData.waterLevel + randomInRange(-1, 1)));
+            
+            sensorData.lightLevel = Math.max(0, Math.min(1200, 
+                sensorData.lightLevel + randomInRange(-50, 50)));
+            
+            updateSoilMoisture(Math.round(sensorData.soilMoisture));
+            updatePH(sensorData.pH);
+            updateTemperature(Math.round(sensorData.temperature));
+            updateHumidity(Math.round(sensorData.humidity));
+            updateBattery(Math.round(sensorData.battery));
+            updateWaterTank(Math.round(sensorData.waterLevel));
+            updateLightLevel(Math.round(sensorData.lightLevel));
+            
+            saveSensorDataPoint();
+            lastUpdateTime = Date.now();
+        }
+        
+        // ============================================
+        // CONTROL FUNCTIONS
+        // ============================================
+        
+        let wateringInterval = null;
+        
+        function startWatering() {
+            if (systemState.isWatering) {
+                showToast('warning', 'System is already watering!');
+                return;
+            }
+            
+            systemState.isWatering = true;
+            systemState.startTime = Date.now();
+            
+            document.getElementById('btnStart').disabled = true;
+            document.getElementById('btnStop').disabled = false;
+            
+            updateHeroStatus();
+            
+            saveActivityLog('WATERING STARTED', 'Manual watering cycle initiated by user', 'play-circle', 'green');
+            showToast('success', 'Watering started successfully!');
+            
+            wateringInterval = setInterval(() => {
+                sensorData.soilMoisture = Math.min(100, sensorData.soilMoisture + 0.5);
+                sensorData.waterLevel = Math.max(0, sensorData.waterLevel - 0.3);
+                sensorData.battery = Math.max(0, sensorData.battery - 0.2);
+                
+                updateSoilMoisture(Math.round(sensorData.soilMoisture));
+                updateWaterTank(Math.round(sensorData.waterLevel));
+                updateBattery(Math.round(sensorData.battery));
+                
+                const stats = loadFromStorage(CONFIG.storageKeys.statistics, {
+                    totalWatering: 247,
+                    waterUsed: 1458,
+                    energyUsed: 89.5,
+                    uptime: 99.2
+                });
+                stats.waterUsed += 0.05;
+                stats.energyUsed += 0.001;
+                renderStatistics(stats);
+                saveToStorage(CONFIG.storageKeys.statistics, stats);
+            }, 1000);
+            
+            saveToStorage(CONFIG.storageKeys.systemState, systemState);
+        }
+        
+        function stopWatering() {
+            if (!systemState.isWatering) {
+                showToast('warning', 'System is not watering!');
+                return;
+            }
+            
+            const duration = Math.floor((Date.now() - systemState.startTime) / 1000);
+            
+            systemState.isWatering = false;
+            systemState.duration = duration;
+            
+            if (wateringInterval) {
+                clearInterval(wateringInterval);
+            }
+            
+            document.getElementById('btnStart').disabled = false;
+            document.getElementById('btnStop').disabled = true;
+            
+            updateHeroStatus();
+            
+            const minutes = Math.floor(duration / 60);
+            const seconds = duration % 60;
+            saveActivityLog('WATERING STOPPED', 
+                `Watering cycle completed. Duration: ${minutes}m ${seconds}s`, 
+                'stop-circle', 'red');
+            
+            showToast('info', `Watering stopped. Duration: ${minutes}m ${seconds}s`);
+            
+            const stats = loadFromStorage(CONFIG.storageKeys.statistics, {
+                totalWatering: 247,
+                waterUsed: 1458,
+                energyUsed: 89.5,
+                uptime: 99.2
+            });
+            stats.totalWatering += 1;
+            renderStatistics(stats);
+            saveToStorage(CONFIG.storageKeys.statistics, stats);
+            
+            saveToStorage(CONFIG.storageKeys.systemState, systemState);
+        }
+        
+        // ============================================
+        // EVENT LISTENERS
+        // ============================================
+        
+        document.getElementById('btnStart').addEventListener('click', startWatering);
+        document.getElementById('btnStop').addEventListener('click', stopWatering);
+        
+        document.getElementById('btnClearLog').addEventListener('click', () => {
+            if (confirm('Are you sure you want to clear all activity logs?')) {
+                saveToStorage(CONFIG.storageKeys.activityLog, []);
+                renderActivityLog();
+                showToast('success', 'Activity log cleared successfully');
+            }
+        });
+        
+        document.querySelectorAll('.mode-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const mode = e.currentTarget.dataset.mode;
+                
+                document.querySelectorAll('.mode-btn').forEach(b => {
+                    b.classList.remove('active');
+                });
+                
+                e.currentTarget.classList.add('active');
+                
+                systemState.mode = mode;
+                saveToStorage(CONFIG.storageKeys.systemState, systemState);
+                
+                const modeNames = {
+                    auto: 'Automatic',
+                    manual: 'Manual',
+                    scheduled: 'Scheduled'
+                };
+                saveActivityLog('MODE CHANGED', 
+                    `Operation mode changed to ${modeNames[mode]}`, 
+                    'cog', 'purple');
+                
+                showToast('info', `Mode changed to ${modeNames[mode]}`);
+            });
+        });
+        
+        ['moisture', 'temp', 'water', 'battery'].forEach(chart => {
+            document.getElementById(`${chart}ChartPeriod`).addEventListener('change', (e) => {
+                showToast('info', `Chart period changed: ${e.target.value}`);
+            });
+        });
+        
+        // ============================================
+        // INITIALIZATION
+        // ============================================
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('🤖 Smart Plant Watering System V2.0 - Initialized');
+            
+            const savedState = loadFromStorage(CONFIG.storageKeys.systemState);
+            if (savedState) {
+                systemState = savedState;
+                systemState.isWatering = false;
+            }
+            
+            const savedStats = loadFromStorage(CONFIG.storageKeys.statistics);
+            if (savedStats) {
+                renderStatistics(savedStats);
+            }
+            
+            updateDateTime();
+            updateHeroStatus();
+            updateSoilMoisture(sensorData.soilMoisture);
+            updatePH(sensorData.pH);
+            updateTemperature(sensorData.temperature);
+            updateHumidity(sensorData.humidity);
+            updateBattery(sensorData.battery);
+            updateWaterTank(sensorData.waterLevel);
+            updateLightLevel(sensorData.lightLevel);
+            updateOperatingHours(sensorData.operatingHours);
+            
+            initializeCharts();
+            renderActivityLog();
+            
+            document.getElementById('initTime').textContent = 'JUST NOW';
+            
+            setInterval(updateDateTime, 1000);
+            setInterval(updateLastUpdateTime, 1000);
+            setInterval(simulateSensorData, CONFIG.updateInterval);
+            setInterval(updateCharts, CONFIG.chartUpdateInterval);
+            setInterval(() => {
+                if (systemState.isWatering) {
+                    updateHeroStatus();
+                }
+            }, 1000);
+            
+            setTimeout(() => {
+                showToast('success', 'Dashboard loaded successfully! All systems operational.');
+            }, 1000);
+            
+            console.log('✅ All systems operational - Ready for action!');
+        });
+        
+        // ============================================
+        // API INTEGRATION FUNCTIONS
+        // ============================================
+        
+        /**
+         * Receive data from ESP32/Backend
+         * @param {Object} data - Sensor data from ESP32
+         */
+        function receiveDataFromESP(data) {
+            console.log('📡 Data received from ESP32:', data);
+            
+            if (data.soilMoisture !== undefined) {
+                sensorData.soilMoisture = data.soilMoisture;
+                updateSoilMoisture(data.soilMoisture);
+            }
+            
+            if (data.pH !== undefined) {
+                sensorData.pH = data.pH;
+                updatePH(data.pH);
+            }
+            
+            if (data.temperature !== undefined) {
+                sensorData.temperature = data.temperature;
+                updateTemperature(data.temperature);
+            }
+            
+            if (data.humidity !== undefined) {
+                sensorData.humidity = data.humidity;
+                updateHumidity(data.humidity);
+            }
+            
+            if (data.battery !== undefined) {
+                sensorData.battery = data.battery;
+                updateBattery(data.battery);
+            }
+            
+            if (data.waterLevel !== undefined) {
+                sensorData.waterLevel = data.waterLevel;
+                updateWaterTank(data.waterLevel);
+            }
+            
+            if (data.lightLevel !== undefined) {
+                sensorData.lightLevel = data.lightLevel;
+                updateLightLevel(data.lightLevel);
+            }
+            
+            if (data.operatingHours !== undefined) {
+                sensorData.operatingHours = data.operatingHours;
+                updateOperatingHours(data.operatingHours);
+            }
+            
+            saveSensorDataPoint();
+            lastUpdateTime = Date.now();
+            
+            saveActivityLog('DATA RECEIVED', 
+                'New sensor data received from ESP32', 
+                'cloud-download-alt', 'cyan');
+        }
+        
+        /**
+         * Send command to ESP32/Backend
+         * @param {String} command - Command to send
+         * @param {Object} params - Additional parameters
+         */
+        async function sendCommandToESP(command, params = {}) {
+            console.log('📤 Sending command to ESP32:', command, params);
+            
+            try {
+                const API_ENDPOINT = 'http://your-esp32-ip/api/command';
+                
+                const response = await fetch(API_ENDPOINT, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        command: command,
+                        params: params,
+                        timestamp: Date.now()
+                    })
+                });
+                
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                
+                const result = await response.json();
+                console.log('✅ Command sent successfully:', result);
+                
+                return result;
+            } catch (error) {
+                console.error('❌ Error sending command:', error);
+                showAlert('error', 'Failed to communicate with ESP32. Please check connection.');
+                return null;
+            }
+        }
+        
+        // Expose functions globally for external API calls
+        window.receiveDataFromESP = receiveDataFromESP;
+        window.sendCommandToESP = sendCommandToESP;
+        
+    </script>
+</body>
+</html>
