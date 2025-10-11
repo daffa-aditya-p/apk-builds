@@ -1,0 +1,17 @@
+{
+  "project_type": "html",
+  "project_dir": "/sdcard/lomba/otn",
+  "app_name": "dapz",
+  "app_id": "com.daffa.dapz",
+  "version": "1.0.0",
+  "version_code": 1,
+  "icon_path": "/sdcard/my-web/.m/IMG-20250829-WA0012.jpg",
+  "permissions": [
+    "android.permission.INTERNET"
+  ],
+  "display_options": {
+    "orientation": "auto",
+    "fullscreen": true,
+    "statusbar": true
+  }
+}
