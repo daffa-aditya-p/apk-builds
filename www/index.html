@@ -1,0 +1,2397 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Automatic Plant Watering System - Dashboard</title>
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Font Awesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            background-attachment: fixed;
+        }
+        
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 5px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+        
+        /* Pulse Animation for Online Status */
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+            50% {
+                opacity: 0.5;
+                transform: scale(1.1);
+            }
+        }
+        
+        .pulse {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        
+        /* Wave Animation for Water */
+        @keyframes wave {
+            0% {
+                transform: translateX(0) translateZ(0) scaleY(1);
+            }
+            50% {
+                transform: translateX(-25%) translateZ(0) scaleY(0.8);
+            }
+            100% {
+                transform: translateX(-50%) translateZ(0) scaleY(1);
+            }
+        }
+        
+        .wave {
+            animation: wave 3s cubic-bezier(0.36, 0.45, 0.63, 0.53) infinite;
+            transform: translate3d(0, 0, 0);
+        }
+        
+        /* Drip Animation */
+        @keyframes drip {
+            0% {
+                transform: translateY(0) scale(1);
+                opacity: 1;
+            }
+            90% {
+                transform: translateY(20px) scale(0.8);
+                opacity: 0.7;
+            }
+            100% {
+                transform: translateY(25px) scale(0.5);
+                opacity: 0;
+            }
+        }
+        
+        .drip {
+            animation: drip 1.5s ease-in-out infinite;
+        }
+        
+        /* Ripple Effect */
+        @keyframes ripple {
+            0% {
+                transform: scale(0);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(4);
+                opacity: 0;
+            }
+        }
+        
+        .ripple {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.6);
+            width: 20px;
+            height: 20px;
+            animation: ripple 0.6s ease-out;
+        }
+        
+        /* Glow Effect */
+        .glow {
+            box-shadow: 0 0 20px rgba(132, 204, 22, 0.5);
+        }
+        
+        .glow-red {
+            box-shadow: 0 0 20px rgba(239, 68, 68, 0.5);
+        }
+        
+        /* Gradient Text */
+        .gradient-text {
+            background: linear-gradient(135deg, #84cc16 0%, #22c55e 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        /* Card Hover Effect */
+        .card-hover {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .card-hover:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        
+        /* Button Press Effect */
+        .btn-press:active {
+            transform: scale(0.95);
+        }
+        
+        /* Slide in Animation */
+        @keyframes slideInRight {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        
+        .slide-in {
+            animation: slideInRight 0.5s ease-out;
+        }
+        
+        /* Fade in Animation */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+        
+        /* Progress Bar Animation */
+        .progress-bar {
+            transition: width 1s ease-in-out;
+        }
+        
+        /* Spinning Loader */
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+        
+        .spin {
+            animation: spin 1s linear infinite;
+        }
+        
+        /* Bounce Animation */
+        @keyframes bounce {
+            0%, 100% {
+                transform: translateY(-25%);
+                animation-timing-function: cubic-bezier(0.8, 0, 1, 1);
+            }
+            50% {
+                transform: translateY(0);
+                animation-timing-function: cubic-bezier(0, 0, 0.2, 1);
+            }
+        }
+        
+        .bounce {
+            animation: bounce 1s infinite;
+        }
+        
+        /* Shake Animation for Errors */
+        @keyframes shake {
+            0%, 100% {
+                transform: translateX(0);
+            }
+            10%, 30%, 50%, 70%, 90% {
+                transform: translateX(-10px);
+            }
+            20%, 40%, 60%, 80% {
+                transform: translateX(10px);
+            }
+        }
+        
+        .shake {
+            animation: shake 0.5s;
+        }
+        
+        /* Water Level Container */
+        .water-container {
+            position: relative;
+            width: 100%;
+            height: 200px;
+            background: linear-gradient(to bottom, #e0f2fe 0%, #bae6fd 100%);
+            border-radius: 12px;
+            overflow: hidden;
+            border: 3px solid #0ea5e9;
+        }
+        
+        .water-level {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: linear-gradient(to top, #0284c7 0%, #38bdf8 100%);
+            transition: height 1s ease-in-out;
+        }
+        
+        .water-wave {
+            position: absolute;
+            top: -20px;
+            left: 0;
+            width: 200%;
+            height: 40px;
+            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 120' preserveAspectRatio='none'%3E%3Cpath d='M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V0H0V27.35A600.21,600.21,0,0,0,321.39,56.44Z' fill='%2338bdf8' opacity='0.5'/%3E%3C/svg%3E");
+            background-repeat: repeat-x;
+            animation: wave 10s cubic-bezier(0.36, 0.45, 0.63, 0.53) infinite;
+        }
+        
+        /* Battery Icon Colors */
+        .battery-full {
+            color: #22c55e;
+        }
+        
+        .battery-good {
+            color: #84cc16;
+        }
+        
+        .battery-medium {
+            color: #eab308;
+        }
+        
+        .battery-low {
+            color: #f97316;
+        }
+        
+        .battery-critical {
+            color: #ef4444;
+            animation: pulse 1s infinite;
+        }
+        
+        /* pH Scale Gradient */
+        .ph-scale {
+            width: 100%;
+            height: 30px;
+            background: linear-gradient(to right, 
+                #dc2626 0%,
+                #ea580c 14%,
+                #f59e0b 28%,
+                #eab308 42%,
+                #84cc16 50%,
+                #22c55e 58%,
+                #10b981 72%,
+                #06b6d4 86%,
+                #3b82f6 100%
+            );
+            border-radius: 15px;
+            position: relative;
+        }
+        
+        .ph-indicator {
+            position: absolute;
+            top: -10px;
+            width: 4px;
+            height: 50px;
+            background: white;
+            border: 2px solid #1f2937;
+            border-radius: 2px;
+            transition: left 0.5s ease-in-out;
+        }
+        
+        /* Gauge Container */
+        .gauge {
+            width: 100%;
+            height: 120px;
+            position: relative;
+        }
+        
+        /* Loading Skeleton */
+        @keyframes shimmer {
+            0% {
+                background-position: -1000px 0;
+            }
+            100% {
+                background-position: 1000px 0;
+            }
+        }
+        
+        .skeleton {
+            animation: shimmer 2s infinite linear;
+            background: linear-gradient(to right, #f3f4f6 0%, #e5e7eb 20%, #f3f4f6 40%, #f3f4f6 100%);
+            background-size: 1000px 100%;
+        }
+        
+        /* Custom Tailwind Config */
+        .container-custom {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+        
+        /* Notification Toast */
+        .toast {
+            position: fixed;
+            top: 100px;
+            right: 20px;
+            z-index: 1000;
+            min-width: 300px;
+            max-width: 500px;
+            animation: slideInRight 0.5s ease-out;
+        }
+        
+        .toast.toast-exit {
+            animation: slideOutRight 0.5s ease-in;
+        }
+        
+        @keyframes slideOutRight {
+            from {
+                transform: translateX(0);
+                opacity: 1;
+            }
+            to {
+                transform: translateX(120%);
+                opacity: 0;
+            }
+        }
+        
+        /* Chart Container Responsive */
+        .chart-container {
+            position: relative;
+            height: 300px;
+            width: 100%;
+        }
+        
+        @media (max-width: 768px) {
+            .chart-container {
+                height: 250px;
+            }
+        }
+        
+        /* Status Badge Pulse */
+        .status-badge-online {
+            background: #22c55e;
+            animation: pulse 2s infinite;
+        }
+        
+        .status-badge-offline {
+            background: #ef4444;
+        }
+        
+        /* Custom Alert Styles */
+        .alert-enter {
+            animation: slideInDown 0.5s ease-out;
+        }
+        
+        @keyframes slideInDown {
+            from {
+                transform: translateY(-100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+        
+        /* Glassmorphism Effect */
+        .glass {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        /* Data Table Styles */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .data-table th {
+            background: #f9fafb;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+            color: #374151;
+            border-bottom: 2px solid #e5e7eb;
+        }
+        
+        .data-table td {
+            padding: 12px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        
+        .data-table tr:hover {
+            background: #f9fafb;
+        }
+    </style>
+</head>
+<body>
+    
+    <!-- Main Container -->
+    <div class="min-h-screen pb-8">
+        
+        <!-- Header -->
+        <header class="bg-white shadow-lg sticky top-0 z-50">
+            <div class="container-custom">
+                <div class="flex items-center justify-between py-4">
+                    <!-- Logo & Title -->
+                    <div class="flex items-center space-x-4">
+                        <div class="w-14 h-14 bg-gradient-to-br from-lime-400 to-green-600 rounded-xl flex items-center justify-center shadow-lg">
+                            <i class="fas fa-seedling text-white text-2xl"></i>
+                        </div>
+                        <div>
+                            <h1 class="text-2xl md:text-3xl font-bold text-gray-800">Automatic Plant Watering</h1>
+                            <p class="text-sm text-gray-500">Smart IoT Monitoring System</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Connection Status & Time -->
+                    <div class="flex flex-col items-end space-y-1">
+                        <div class="flex items-center space-x-2">
+                            <span class="text-sm font-medium text-gray-600">Status:</span>
+                            <div class="flex items-center space-x-2 px-3 py-1 rounded-full bg-green-100" id="connectionStatus">
+                                <span class="w-3 h-3 rounded-full bg-green-500 pulse"></span>
+                                <span class="text-sm font-semibold text-green-700">Online</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center space-x-2 text-sm text-gray-500">
+                            <i class="far fa-clock"></i>
+                            <span id="lastUpdate">Last update: Just now</span>
+                        </div>
+                        <div class="flex items-center space-x-2 text-xs text-gray-400">
+                            <i class="far fa-calendar"></i>
+                            <span id="currentDateTime">Loading...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+        
+        <!-- Alert Container -->
+        <div id="alertContainer" class="container-custom mt-4"></div>
+        
+        <!-- Main Content -->
+        <main class="container-custom mt-8">
+            
+            <!-- Hero Status Banner -->
+            <section id="heroStatus" class="mb-8 p-8 rounded-2xl shadow-2xl transition-all duration-500 bg-gradient-to-r from-gray-100 to-gray-200">
+                <div class="flex flex-col md:flex-row items-center justify-between">
+                    <div class="flex items-center space-x-6 mb-4 md:mb-0">
+                        <div class="w-24 h-24 rounded-full flex items-center justify-center bg-white shadow-lg" id="heroIcon">
+                            <i class="fas fa-power-off text-5xl text-gray-500"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-4xl font-extrabold text-gray-800" id="heroTitle">STANDBY MODE</h2>
+                            <p class="text-lg text-gray-600 mt-2" id="heroDescription">System is ready and waiting for command</p>
+                        </div>
+                    </div>
+                    <div class="text-center md:text-right">
+                        <div class="text-6xl font-black text-gray-400" id="heroTimer">00:00</div>
+                        <p class="text-sm text-gray-500 mt-2">Active Duration</p>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Manual Control Section -->
+            <section class="mb-8 bg-white rounded-2xl shadow-xl p-6 md:p-8">
+                <div class="flex items-center space-x-3 mb-6">
+                    <div class="w-10 h-10 bg-gradient-to-br from-blue-400 to-blue-600 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-gamepad text-white"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold text-gray-800">Manual Control</h3>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- Start Button -->
+                    <button id="btnStart" class="relative overflow-hidden bg-gradient-to-r from-lime-400 to-green-500 hover:from-lime-500 hover:to-green-600 text-white font-bold py-6 px-8 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:scale-105 btn-press glow">
+                        <div class="flex items-center justify-center space-x-3">
+                            <i class="fas fa-play-circle text-3xl"></i>
+                            <span class="text-xl">START WATERING</span>
+                        </div>
+                    </button>
+                    
+                    <!-- Stop Button -->
+                    <button id="btnStop" class="relative overflow-hidden bg-gradient-to-r from-red-400 to-red-600 hover:from-red-500 hover:to-red-700 text-white font-bold py-6 px-8 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:scale-105 btn-press disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                        <div class="flex items-center justify-center space-x-3">
+                            <i class="fas fa-stop-circle text-3xl"></i>
+                            <span class="text-xl">STOP WATERING</span>
+                        </div>
+                    </button>
+                </div>
+                
+                <!-- Mode Selector -->
+                <div class="mt-6 p-4 bg-gray-50 rounded-xl">
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Operation Mode:</label>
+                    <div class="flex flex-wrap gap-3">
+                        <button class="mode-btn px-4 py-2 rounded-lg bg-white border-2 border-lime-500 text-lime-600 font-semibold hover:bg-lime-50 transition" data-mode="auto">
+                            <i class="fas fa-robot mr-2"></i>Automatic
+                        </button>
+                        <button class="mode-btn px-4 py-2 rounded-lg bg-lime-500 border-2 border-lime-500 text-white font-semibold hover:bg-lime-600 transition" data-mode="manual">
+                            <i class="fas fa-hand-pointer mr-2"></i>Manual
+                        </button>
+                        <button class="mode-btn px-4 py-2 rounded-lg bg-white border-2 border-gray-300 text-gray-600 font-semibold hover:bg-gray-50 transition" data-mode="scheduled">
+                            <i class="far fa-clock mr-2"></i>Scheduled
+                        </button>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Monitoring Cards Grid -->
+            <section class="mb-8">
+                <div class="flex items-center space-x-3 mb-6">
+                    <div class="w-10 h-10 bg-gradient-to-br from-purple-400 to-purple-600 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-chart-line text-white"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold text-gray-800">Real-Time Monitoring</h3>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                    
+                    <!-- Soil Moisture Card -->
+                    <div class="bg-white rounded-xl shadow-lg p-6 card-hover">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-12 h-12 bg-gradient-to-br from-green-400 to-green-600 rounded-full flex items-center justify-center">
+                                    <i class="fas fa-tint text-white text-xl"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold text-gray-700">Soil Moisture</h4>
+                                    <p class="text-xs text-gray-500">Kelembaban Tanah</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="text-center mb-4">
+                            <div class="text-5xl font-black gradient-text" id="soilMoistureValue">65</div>
+                            <div class="text-xl font-semibold text-gray-600">%</div>
+                            <div class="mt-2 px-3 py-1 rounded-full text-sm font-semibold inline-block" id="soilMoistureStatus">
+                                Optimal
+                            </div>
+                        </div>
+                        
+                        <!-- Progress Bar -->
+                        <div class="w-full bg-gray-200 rounded-full h-4 overflow-hidden">
+                            <div class="h-full bg-gradient-to-r from-green-400 to-green-600 rounded-full progress-bar" id="soilMoistureBar" style="width: 65%"></div>
+                        </div>
+                        
+                        <div class="mt-3 flex justify-between text-xs text-gray-500">
+                            <span>Dry</span>
+                            <span class="font-semibold text-green-600">Optimal: 40-70%</span>
+                            <span>Wet</span>
+                        </div>
+                    </div>
+                    
+                    <!-- pH Level Card -->
+                    <div class="bg-white rounded-xl shadow-lg p-6 card-hover">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-12 h-12 bg-gradient-to-br from-yellow-400 to-orange-600 rounded-full flex items-center justify-center">
+                                    <i class="fas fa-flask text-white text-xl"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold text-gray-700">Soil pH</h4>
+                                    <p class="text-xs text-gray-500">pH Tanah</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="text-center mb-4">
+                            <div class="text-5xl font-black text-orange-500" id="phValue">6.8</div>
+                            <div class="mt-2 px-3 py-1 rounded-full text-sm font-semibold inline-block bg-green-100 text-green-700" id="phStatus">
+                                Ideal
+                            </div>
+                        </div>
+                        
+                        <!-- pH Scale -->
+                        <div class="ph-scale mb-2">
+                            <div class="ph-indicator" id="phIndicator"></div>
+                        </div>
+                        
+                        <div class="flex justify-between text-xs text-gray-500 mt-1">
+                            <span>0 (Acid)</span>
+                            <span class="font-semibold text-green-600">Ideal: 6.0-7.5</span>
+                            <span>14 (Alkaline)</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Operating Hours Card -->
+                    <div class="bg-white rounded-xl shadow-lg p-6 card-hover">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-12 h-12 bg-gradient-to-br from-blue-400 to-blue-600 rounded-full flex items-center justify-center">
+                                    <i class="fas fa-clock text-white text-xl"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold text-gray-700">Operating Hours</h4>
+                                    <p class="text-xs text-gray-500">Jam Kerja Robot</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="text-center mb-4">
+                            <div class="text-5xl font-black text-blue-500" id="totalHoursValue">127</div>
+                            <div class="text-xl font-semibold text-gray-600">Hours</div>
+                        </div>
+                        
+                        <div class="space-y-2 mt-4">
+                            <div class="flex justify-between items-center p-2 bg-blue-50 rounded-lg">
+                                <span class="text-sm text-gray-600">Today:</span>
+                                <span class="font-bold text-blue-600" id="todayHours">2.5 hrs</span>
+                            </div>
+                            <div class="flex justify-between items-center p-2 bg-gray-50 rounded-lg">
+                                <span class="text-sm text-gray-600">This Week:</span>
+                                <span class="font-bold text-gray-700" id="weekHours">18.3 hrs</span>
+                            </div>
+                            <div class="flex justify-between items-center p-2 bg-gray-50 rounded-lg">
+                                <span class="text-sm text-gray-600">Avg/Day:</span>
+                                <span class="font-bold text-gray-700" id="avgHours">2.6 hrs</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Battery Status Card -->
+                    <div class="bg-white rounded-xl shadow-lg p-6 card-hover">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-12 h-12 bg-gradient-to-br from-emerald-400 to-emerald-600 rounded-full flex items-center justify-center">
+                                    <i class="fas fa-battery-three-quarters text-white text-xl" id="batteryIcon"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold text-gray-700">Battery</h4>
+                                    <p class="text-xs text-gray-500">Status Baterai</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="text-center mb-4">
+                            <div class="text-5xl font-black battery-full" id="batteryValue">85</div>
+                            <div class="text-xl font-semibold text-gray-600">%</div>
+                            <div class="mt-2 px-3 py-1 rounded-full text-sm font-semibold inline-block bg-green-100 text-green-700" id="batteryStatus">
+                                Good
+                            </div>
+                        </div>
+                        
+                        <!-- Battery Bar -->
+                        <div class="w-full bg-gray-200 rounded-full h-4 overflow-hidden">
+                            <div class="h-full bg-gradient-to-r from-green-400 to-green-600 rounded-full progress-bar" id="batteryBar" style="width: 85%"></div>
+                        </div>
+                        
+                        <div class="mt-4 space-y-2">
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm text-gray-600">Estimated Time:</span>
+                                <span class="font-bold text-green-600" id="batteryTime">6-8 hrs</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm text-gray-600">Voltage:</span>
+                                <span class="font-bold text-gray-700" id="batteryVoltage">12.4V</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Water Tank Card -->
+                    <div class="bg-white rounded-xl shadow-lg p-6 card-hover">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-12 h-12 bg-gradient-to-br from-cyan-400 to-blue-600 rounded-full flex items-center justify-center">
+                                    <i class="fas fa-water text-white text-xl"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold text-gray-700">Water Tank</h4>
+                                    <p class="text-xs text-gray-500">Tangki Air</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Water Container Visualization -->
+                        <div class="water-container mb-4">
+                            <div class="water-level" id="waterLevel" style="height: 72%">
+                                <div class="water-wave"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="text-center">
+                            <div class="text-4xl font-black text-cyan-600" id="waterPercentage">72</div>
+                            <div class="text-lg font-semibold text-gray-600">%</div>
+                            <div class="mt-2 text-sm text-gray-600">
+                                <span class="font-bold text-cyan-600" id="waterVolume">7.2L</span> / 10L
+                            </div>
+                            <div class="mt-2 px-3 py-1 rounded-full text-sm font-semibold inline-block bg-cyan-100 text-cyan-700" id="waterStatus">
+                                Sufficient
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Temperature Card -->
+                    <div class="bg-white rounded-xl shadow-lg p-6 card-hover">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-12 h-12 bg-gradient-to-br from-red-400 to-orange-600 rounded-full flex items-center justify-center">
+                                    <i class="fas fa-thermometer-half text-white text-xl"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold text-gray-700">Temperature</h4>
+                                    <p class="text-xs text-gray-500">Suhu Lingkungan</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="text-center mb-4">
+                            <div class="text-5xl font-black text-orange-500" id="temperatureValue">28</div>
+                            <div class="text-2xl font-semibold text-gray-600">°C</div>
+                            <div class="mt-2 px-3 py-1 rounded-full text-sm font-semibold inline-block bg-green-100 text-green-700" id="temperatureStatus">
+                                Normal
+                            </div>
+                        </div>
+                        
+                        <div class="flex justify-around mt-4">
+                            <div class="text-center">
+                                <div class="text-2xl font-bold text-blue-500" id="tempMin">24°</div>
+                                <div class="text-xs text-gray-500">Min</div>
+                            </div>
+                            <div class="text-center">
+                                <div class="text-2xl font-bold text-red-500" id="tempMax">32°</div>
+                                <div class="text-xs text-gray-500">Max</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Humidity Card -->
+                    <div class="bg-white rounded-xl shadow-lg p-6 card-hover">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-12 h-12 bg-gradient-to-br from-indigo-400 to-purple-600 rounded-full flex items-center justify-center">
+                                    <i class="fas fa-cloud text-white text-xl"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold text-gray-700">Air Humidity</h4>
+                                    <p class="text-xs text-gray-500">Kelembaban Udara</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="text-center mb-4">
+                            <div class="text-5xl font-black text-indigo-500" id="humidityValue">65</div>
+                            <div class="text-xl font-semibold text-gray-600">%</div>
+                            <div class="mt-2 px-3 py-1 rounded-full text-sm font-semibold inline-block bg-indigo-100 text-indigo-700" id="humidityStatus">
+                                Comfortable
+                            </div>
+                        </div>
+                        
+                        <!-- Progress Bar -->
+                        <div class="w-full bg-gray-200 rounded-full h-4 overflow-hidden">
+                            <div class="h-full bg-gradient-to-r from-indigo-400 to-purple-600 rounded-full progress-bar" id="humidityBar" style="width: 65%"></div>
+                        </div>
+                        
+                        <div class="mt-3 text-center text-xs text-gray-500">
+                            Ideal range: 40-70%
+                        </div>
+                    </div>
+                    
+                    <!-- Light Intensity Card -->
+                    <div class="bg-white rounded-xl shadow-lg p-6 card-hover">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-12 h-12 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-full flex items-center justify-center">
+                                    <i class="fas fa-sun text-white text-xl"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold text-gray-700">Light Level</h4>
+                                    <p class="text-xs text-gray-500">Intensitas Cahaya</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="text-center mb-4">
+                            <div class="text-5xl font-black text-yellow-500" id="lightValue">850</div>
+                            <div class="text-xl font-semibold text-gray-600">Lux</div>
+                            <div class="mt-2 px-3 py-1 rounded-full text-sm font-semibold inline-block bg-yellow-100 text-yellow-700" id="lightStatus">
+                                Bright
+                            </div>
+                        </div>
+                        
+                        <div class="mt-4 space-y-2">
+                            <div class="flex justify-between items-center p-2 bg-gray-50 rounded-lg">
+                                <span class="text-sm text-gray-600">Condition:</span>
+                                <span class="font-bold text-yellow-600" id="lightCondition">Sunny</span>
+                            </div>
+                            <div class="flex justify-between items-center p-2 bg-gray-50 rounded-lg">
+                                <span class="text-sm text-gray-600">UV Index:</span>
+                                <span class="font-bold text-gray-700" id="uvIndex">5 (Moderate)</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                </div>
+            </section>
+            
+            <!-- Analytics Charts Section -->
+            <section class="mb-8">
+                <div class="flex items-center space-x-3 mb-6">
+                    <div class="w-10 h-10 bg-gradient-to-br from-pink-400 to-red-600 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-chart-area text-white"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold text-gray-800">Analytics & Historical Data</h3>
+                </div>
+                
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    
+                    <!-- Soil Moisture Chart -->
+                    <div class="bg-white rounded-xl shadow-lg p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <h4 class="text-lg font-bold text-gray-700">Soil Moisture Trend</h4>
+                            <select id="moistureChartPeriod" class="px-3 py-1 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-lime-500">
+                                <option value="24h">Last 24 Hours</option>
+                                <option value="7d">Last 7 Days</option>
+                                <option value="30d">Last 30 Days</option>
+                            </select>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="moistureChart"></canvas>
+                        </div>
+                    </div>
+                    
+                    <!-- Temperature & Humidity Chart -->
+                    <div class="bg-white rounded-xl shadow-lg p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <h4 class="text-lg font-bold text-gray-700">Temperature & Humidity</h4>
+                            <select id="tempChartPeriod" class="px-3 py-1 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-lime-500">
+                                <option value="24h">Last 24 Hours</option>
+                                <option value="7d">Last 7 Days</option>
+                                <option value="30d">Last 30 Days</option>
+                            </select>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="tempHumidityChart"></canvas>
+                        </div>
+                    </div>
+                    
+                    <!-- Water Usage Chart -->
+                    <div class="bg-white rounded-xl shadow-lg p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <h4 class="text-lg font-bold text-gray-700">Water Usage Statistics</h4>
+                            <select id="waterChartPeriod" class="px-3 py-1 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-lime-500">
+                                <option value="7d">Last 7 Days</option>
+                                <option value="30d">Last 30 Days</option>
+                                <option value="90d">Last 90 Days</option>
+                            </select>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="waterUsageChart"></canvas>
+                        </div>
+                    </div>
+                    
+                    <!-- Battery Level Chart -->
+                    <div class="bg-white rounded-xl shadow-lg p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <h4 class="text-lg font-bold text-gray-700">Battery Level History</h4>
+                            <select id="batteryChartPeriod" class="px-3 py-1 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-lime-500">
+                                <option value="24h">Last 24 Hours</option>
+                                <option value="7d">Last 7 Days</option>
+                                <option value="30d">Last 30 Days</option>
+                            </select>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="batteryChart"></canvas>
+                        </div>
+                    </div>
+                    
+                </div>
+            </section>
+            
+            <!-- Activity Log Section -->
+            <section class="mb-8">
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <div class="flex items-center justify-between mb-6">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-10 h-10 bg-gradient-to-br from-teal-400 to-teal-600 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-list-ul text-white"></i>
+                            </div>
+                            <h3 class="text-2xl font-bold text-gray-800">Activity Log</h3>
+                        </div>
+                        <button id="btnClearLog" class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg text-sm font-semibold transition">
+                            <i class="fas fa-trash-alt mr-2"></i>Clear Log
+                        </button>
+                    </div>
+                    
+                    <div class="space-y-3 max-h-96 overflow-y-auto" id="activityLog">
+                        <!-- Activity log items will be inserted here dynamically -->
+                        <div class="flex items-start space-x-3 p-3 bg-gray-50 rounded-lg">
+                            <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
+                                <i class="fas fa-info-circle text-blue-600"></i>
+                            </div>
+                            <div class="flex-1">
+                                <div class="flex items-center justify-between">
+                                    <span class="font-semibold text-gray-800">System Initialized</span>
+                                    <span class="text-xs text-gray-500" id="initTime">Just now</span>
+                                </div>
+                                <p class="text-sm text-gray-600 mt-1">Dashboard loaded successfully. All sensors online.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Statistics Summary -->
+            <section class="mb-8">
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <div class="flex items-center space-x-3 mb-6">
+                        <div class="w-10 h-10 bg-gradient-to-br from-orange-400 to-red-600 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-chart-pie text-white"></i>
+                        </div>
+                        <h3 class="text-2xl font-bold text-gray-800">System Statistics</h3>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <div class="p-4 bg-gradient-to-br from-lime-50 to-green-50 rounded-xl border border-lime-200">
+                            <div class="flex items-center space-x-2 mb-2">
+                                <i class="fas fa-check-circle text-lime-600"></i>
+                                <span class="text-sm font-semibold text-gray-700">Total Watering</span>
+                            </div>
+                            <div class="text-3xl font-black text-lime-600" id="statTotalWatering">247</div>
+                            <div class="text-xs text-gray-500 mt-1">cycles completed</div>
+                        </div>
+                        
+                        <div class="p-4 bg-gradient-to-br from-blue-50 to-cyan-50 rounded-xl border border-blue-200">
+                            <div class="flex items-center space-x-2 mb-2">
+                                <i class="fas fa-water text-blue-600"></i>
+                                <span class="text-sm font-semibold text-gray-700">Water Used</span>
+                            </div>
+                            <div class="text-3xl font-black text-blue-600" id="statWaterUsed">1,458</div>
+                            <div class="text-xs text-gray-500 mt-1">liters total</div>
+                        </div>
+                        
+                        <div class="p-4 bg-gradient-to-br from-purple-50 to-pink-50 rounded-xl border border-purple-200">
+                            <div class="flex items-center space-x-2 mb-2">
+                                <i class="fas fa-bolt text-purple-600"></i>
+                                <span class="text-sm font-semibold text-gray-700">Energy Used</span>
+                            </div>
+                            <div class="text-3xl font-black text-purple-600" id="statEnergyUsed">89.5</div>
+                            <div class="text-xs text-gray-500 mt-1">kWh consumed</div>
+                        </div>
+                        
+                        <div class="p-4 bg-gradient-to-br from-yellow-50 to-orange-50 rounded-xl border border-yellow-200">
+                            <div class="flex items-center space-x-2 mb-2">
+                                <i class="fas fa-calendar-check text-yellow-600"></i>
+                                <span class="text-sm font-semibold text-gray-700">Uptime</span>
+                            </div>
+                            <div class="text-3xl font-black text-yellow-600" id="statUptime">99.2</div>
+                            <div class="text-xs text-gray-500 mt-1">% availability</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+        </main>
+        
+        <!-- Footer -->
+        <footer class="bg-gray-900 text-white py-8 mt-12">
+            <div class="container-custom">
+                <div class="flex flex-col md:flex-row items-center justify-between">
+                    <div class="flex items-center space-x-3 mb-4 md:mb-0">
+                        <div class="w-10 h-10 bg-gradient-to-br from-lime-400 to-green-600 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-seedling text-white"></i>
+                        </div>
+                        <div>
+                            <p class="font-bold text-lg">Automatic Plant Watering System</p>
+                            <p class="text-sm text-gray-400">Smart IoT Solution for Agriculture</p>
+                        </div>
+                    </div>
+                    
+                    <div class="text-center md:text-right">
+                        <p class="text-sm text-gray-400">© 2025 Team The Founder Volatile</p>
+                        <p class="text-xs text-gray-500 mt-1">Developed with ❤️ for Robotics Competition</p>
+                    </div>
+                </div>
+                
+                <div class="mt-6 pt-6 border-t border-gray-800 text-center">
+                    <div class="flex justify-center space-x-6 text-sm text-gray-400">
+                        <a href="#" class="hover:text-lime-400 transition"><i class="fas fa-book mr-2"></i>Documentation</a>
+                        <a href="#" class="hover:text-lime-400 transition"><i class="fas fa-code mr-2"></i>API Reference</a>
+                        <a href="#" class="hover:text-lime-400 transition"><i class="fas fa-life-ring mr-2"></i>Support</a>
+                        <a href="#" class="hover:text-lime-400 transition"><i class="fab fa-github mr-2"></i>GitHub</a>
+                    </div>
+                </div>
+            </div>
+        </footer>
+        
+    </div>
+    
+    <!-- Toast Notification Container -->
+    <div id="toastContainer"></div>
+    
+    <!-- JavaScript -->
+    <script>
+        // ============================================
+        // CONFIGURATION & CONSTANTS
+        // ============================================
+        
+        const CONFIG = {
+            updateInterval: 3000, // Update sensor data every 3 seconds
+            chartUpdateInterval: 10000, // Update charts every 10 seconds
+            maxLogEntries: 50, // Maximum activity log entries
+            maxDataPoints: 50, // Maximum data points to store in localStorage
+            storageKeys: {
+                sensorData: 'plantWatering_sensorData',
+                activityLog: 'plantWatering_activityLog',
+                statistics: 'plantWatering_statistics',
+                systemState: 'plantWatering_systemState'
+            }
+        };
+        
+        // ============================================
+        // STATE MANAGEMENT
+        // ============================================
+        
+        let systemState = {
+            isWatering: false,
+            mode: 'manual', // manual, auto, scheduled
+            startTime: null,
+            duration: 0,
+            isOnline: true
+        };
+        
+        let sensorData = {
+            soilMoisture: 65,
+            pH: 6.8,
+            temperature: 28,
+            humidity: 65,
+            battery: 85,
+            waterLevel: 72,
+            lightLevel: 850,
+            operatingHours: 127
+        };
+        
+        let charts = {
+            moisture: null,
+            tempHumidity: null,
+            waterUsage: null,
+            battery: null
+        };
+        
+        // ============================================
+        // UTILITY FUNCTIONS
+        // ============================================
+        
+        // Format number with comma separators
+        function formatNumber(num) {
+            return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        }
+        
+        // Format date to readable string
+        function formatDate(date) {
+            const options = { 
+                year: 'numeric', 
+                month: 'short', 
+                day: 'numeric', 
+                hour: '2-digit', 
+                minute: '2-digit',
+                second: '2-digit'
+            };
+            return date.toLocaleDateString('en-US', options);
+        }
+        
+        // Format relative time
+        function getRelativeTime(timestamp) {
+            const now = Date.now();
+            const diff = now - timestamp;
+            const seconds = Math.floor(diff / 1000);
+            const minutes = Math.floor(seconds / 60);
+            const hours = Math.floor(minutes / 60);
+            const days = Math.floor(hours / 24);
+            
+            if (seconds < 60) return 'Just now';
+            if (minutes < 60) return `${minutes} minute${minutes > 1 ? 's' : ''} ago`;
+            if (hours < 24) return `${hours} hour${hours > 1 ? 's' : ''} ago`;
+            return `${days} day${days > 1 ? 's' : ''} ago`;
+        }
+        
+        // Generate random value within range
+        function randomInRange(min, max, decimals = 0) {
+            const value = Math.random() * (max - min) + min;
+            return decimals > 0 ? parseFloat(value.toFixed(decimals)) : Math.round(value);
+        }
+        
+        // Smooth value change (prevents sudden jumps)
+        function smoothChange(currentValue, targetValue, step) {
+            if (Math.abs(targetValue - currentValue) < step) {
+                return targetValue;
+            }
+            return currentValue + (targetValue > currentValue ? step : -step);
+        }
+        
+        // ============================================
+        // LOCAL STORAGE FUNCTIONS
+        // ============================================
+        
+        // Save data to localStorage
+        function saveToStorage(key, data) {
+            try {
+                localStorage.setItem(key, JSON.stringify(data));
+            } catch (e) {
+                console.error('Error saving to localStorage:', e);
+            }
+        }
+        
+        // Load data from localStorage
+        function loadFromStorage(key, defaultValue = null) {
+            try {
+                const data = localStorage.getItem(key);
+                return data ? JSON.parse(data) : defaultValue;
+            } catch (e) {
+                console.error('Error loading from localStorage:', e);
+                return defaultValue;
+            }
+        }
+        
+        // Save sensor data point
+        function saveSensorDataPoint() {
+            const dataPoints = loadFromStorage(CONFIG.storageKeys.sensorData, []);
+            const newPoint = {
+                timestamp: Date.now(),
+                ...sensorData
+            };
+            
+            dataPoints.push(newPoint);
+            
+            // Keep only last N data points
+            if (dataPoints.length > CONFIG.maxDataPoints) {
+                dataPoints.shift();
+            }
+            
+            saveToStorage(CONFIG.storageKeys.sensorData, dataPoints);
+        }
+        
+        // Save activity log
+        function saveActivityLog(type, message, icon = 'info-circle', color = 'blue') {
+            const logs = loadFromStorage(CONFIG.storageKeys.activityLog, []);
+            const newLog = {
+                timestamp: Date.now(),
+                type,
+                message,
+                icon,
+                color
+            };
+            
+            logs.unshift(newLog); // Add to beginning
+            
+            // Keep only last N logs
+            if (logs.length > CONFIG.maxLogEntries) {
+                logs.pop();
+            }
+            
+            saveToStorage(CONFIG.storageKeys.activityLog, logs);
+            renderActivityLog();
+        }
+        
+        // Update statistics
+        function updateStatistics(stat, value) {
+            const stats = loadFromStorage(CONFIG.storageKeys.statistics, {
+                totalWatering: 247,
+                waterUsed: 1458,
+                energyUsed: 89.5,
+                uptime: 99.2
+            });
+            
+            if (stat in stats) {
+                stats[stat] = value;
+                saveToStorage(CONFIG.storageKeys.statistics, stats);
+                renderStatistics(stats);
+            }
+        }
+        
+        // ============================================
+        // UI UPDATE FUNCTIONS
+        // ============================================
+        
+        // Update current date/time
+        function updateDateTime() {
+            const now = new Date();
+            document.getElementById('currentDateTime').textContent = formatDate(now);
+        }
+        
+        // Update last update time
+        let lastUpdateTime = Date.now();
+        function updateLastUpdateTime() {
+            document.getElementById('lastUpdate').textContent = `Last update: ${getRelativeTime(lastUpdateTime)}`;
+        }
+        
+        // Update hero status banner
+        function updateHeroStatus() {
+            const heroSection = document.getElementById('heroStatus');
+            const heroIcon = document.getElementById('heroIcon');
+            const heroTitle = document.getElementById('heroTitle');
+            const heroDescription = document.getElementById('heroDescription');
+            const heroTimer = document.getElementById('heroTimer');
+            
+            if (systemState.isWatering) {
+                heroSection.className = 'mb-8 p-8 rounded-2xl shadow-2xl transition-all duration-500 bg-gradient-to-r from-lime-400 to-green-600 glow';
+                heroIcon.innerHTML = '<i class="fas fa-tint text-5xl text-white drip"></i>';
+                heroTitle.textContent = 'ACTIVE WATERING';
+                heroTitle.className = 'text-4xl font-extrabold text-white';
+                heroDescription.textContent = 'System is actively watering the plants';
+                heroDescription.className = 'text-lg text-white mt-2';
+                
+                // Update timer
+                const elapsed = Math.floor((Date.now() - systemState.startTime) / 1000);
+                const minutes = Math.floor(elapsed / 60);
+                const seconds = elapsed % 60;
+                heroTimer.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+                heroTimer.className = 'text-6xl font-black text-white';
+            } else {
+                heroSection.className = 'mb-8 p-8 rounded-2xl shadow-2xl transition-all duration-500 bg-gradient-to-r from-gray-100 to-gray-200';
+                heroIcon.innerHTML = '<i class="fas fa-power-off text-5xl text-gray-500"></i>';
+                heroTitle.textContent = 'STANDBY MODE';
+                heroTitle.className = 'text-4xl font-extrabold text-gray-800';
+                heroDescription.textContent = 'System is ready and waiting for command';
+                heroDescription.className = 'text-lg text-gray-600 mt-2';
+                heroTimer.textContent = '00:00';
+                heroTimer.className = 'text-6xl font-black text-gray-400';
+            }
+        }
+        
+        // Update soil moisture display
+        function updateSoilMoisture(value) {
+            document.getElementById('soilMoistureValue').textContent = value;
+            document.getElementById('soilMoistureBar').style.width = value + '%';
+            
+            const statusElement = document.getElementById('soilMoistureStatus');
+            if (value < 40) {
+                statusElement.textContent = 'Dry';
+                statusElement.className = 'mt-2 px-3 py-1 rounded-full text-sm font-semibold inline-block bg-red-100 text-red-700';
+            } else if (value <= 70) {
+                statusElement.textContent = 'Optimal';
+                statusElement.className = 'mt-2 px-3 py-1 rounded-full text-sm font-semibold inline-block bg-green-100 text-green-700';
+            } else {
+                statusElement.textContent = 'Too Wet';
+                statusElement.className = 'mt-2 px-3 py-1 rounded-full text-sm font-semibold inline-block bg-blue-100 text-blue-700';
+            }
+        }
+        
+        // Update pH display
+        function updatePH(value) {
+            document.getElementById('phValue').textContent = value.toFixed(1);
+            
+            // Update pH indicator position (0-14 scale)
+            const position = (value / 14) * 100;
+            document.getElementById('phIndicator').style.left = `calc(${position}% - 2px)`;
+            
+            const statusElement = document.getElementById('phStatus');
+            if (value >= 6.0 && value <= 7.5) {
+                statusElement.textContent = 'Ideal';
+                statusElement.className = 'mt-2 px-3 py-1 rounded-full text-sm font-semibold inline-block bg-green-100 text-green-700';
+            } else if (value < 6.0) {
+                statusElement.textContent = 'Too Acidic';
+                statusElement.className = 'mt-2 px-3 py-1 rounded-full text-sm font-semibold inline-block bg-orange-100 text-orange-700';
+            } else {
+                statusElement.textContent = 'Too Alkaline';
+                statusElement.className = 'mt-2 px-3 py-1 rounded-full text-sm font-semibold inline-block bg-blue-100 text-blue-700';
+            }
+        }
+        
+        // Update battery display
+        function updateBattery(value) {
+            document.getElementById('batteryValue').textContent = value;
+            document.getElementById('batteryBar').style.width = value + '%';
+            
+            const icon = document.getElementById('batteryIcon');
+            const valueElement = document.getElementById('batteryValue');
+            const statusElement = document.getElementById('batteryStatus');
+            const timeElement = document.getElementById('batteryTime');
+            
+            // Update icon and colors based on battery level
+            if (value > 80) {
+                icon.className = 'fas fa-battery-full text-white text-xl';
+                valueElement.className = 'text-5xl font-black battery-full';
+                statusElement.textContent = 'Excellent';
+                statusElement.className = 'mt-2 px-3 py-1 rounded-full text-sm font-semibold inline-block bg-green-100 text-green-700';
+                document.getElementById('batteryBar').className = 'h-full bg-gradient-to-r from-green-400 to-green-600 rounded-full progress-bar';
+                timeElement.textContent = '8-10 hrs';
+            } else if (value > 60) {
+                icon.className = 'fas fa-battery-three-quarters text-white text-xl';
+                valueElement.className = 'text-5xl font-black battery-good';
+                statusElement.textContent = 'Good';
+                statusElement.className = 'mt-2 px-3 py-1 rounded-full text-sm font-semibold inline-block bg-green-100 text-green-700';
+                document.getElementById('batteryBar').className = 'h-full bg-gradient-to-r from-green-400 to-green-600 rounded-full progress-bar';
+                timeElement.textContent = '6-8 hrs';
+            } else if (value > 40) {
+                icon.className = 'fas fa-battery-half text-white text-xl';
+                valueElement.className = 'text-5xl font-black battery-medium';
+                statusElement.textContent = 'Medium';
+                statusElement.className = 'mt-2 px-3 py-1 rounded-full text-sm font-semibold inline-block bg-yellow-100 text-yellow-700';
+                document.getElementById('batteryBar').className = 'h-full bg-gradient-to-r from-yellow-400 to-yellow-600 rounded-full progress-bar';
+                timeElement.textContent = '4-6 hrs';
+            } else if (value > 20) {
+                icon.className = 'fas fa-battery-quarter text-white text-xl';
+                valueElement.className = 'text-5xl font-black battery-low';
+                statusElement.textContent = 'Low';
+                statusElement.className = 'mt-2 px-3 py-1 rounded-full text-sm font-semibold inline-block bg-orange-100 text-orange-700';
+                document.getElementById('batteryBar').className = 'h-full bg-gradient-to-r from-orange-400 to-orange-600 rounded-full progress-bar';
+                timeElement.textContent = '2-4 hrs';
+                
+                // Show warning notification if first time reaching low
+                if (value === 40) {
+                    showAlert('warning', 'Battery level is getting low. Consider charging soon.');
+                }
+            } else {
+                icon.className = 'fas fa-battery-empty text-white text-xl';
+                valueElement.className = 'text-5xl font-black battery-critical';
+                statusElement.textContent = 'Critical';
+                statusElement.className = 'mt-2 px-3 py-1 rounded-full text-sm font-semibold inline-block bg-red-100 text-red-700';
+                document.getElementById('batteryBar').className = 'h-full bg-gradient-to-r from-red-400 to-red-600 rounded-full progress-bar';
+                timeElement.textContent = '< 2 hrs';
+                
+                // Show critical notification
+                if (value === 20) {
+                    showAlert('error', 'Battery level critical! Please charge immediately.');
+                }
+            }
+            
+            // Update voltage (simulate)
+            const voltage = 10.5 + (value / 100) * 2.5; // 10.5V to 13V range
+            document.getElementById('batteryVoltage').textContent = voltage.toFixed(1) + 'V';
+        }
+        
+        // Update water tank display
+        function updateWaterTank(value) {
+            document.getElementById('waterPercentage').textContent = value;
+            document.getElementById('waterLevel').style.height = value + '%';
+            
+            const volume = (value / 100) * 10; // 10L tank
+            document.getElementById('waterVolume').textContent = volume.toFixed(1) + 'L';
+            
+            const statusElement = document.getElementById('waterStatus');
+            if (value < 20) {
+                statusElement.textContent = 'Very Low';
+                statusElement.className = 'mt-2 px-3 py-1 rounded-full text-sm font-semibold inline-block bg-red-100 text-red-700';
+                
+                // Show warning
+                if (value === 20) {
+                    showAlert('warning', 'Water tank is running low. Please refill soon.');
+                }
+            } else if (value < 40) {
+                statusElement.textContent = 'Low';
+                statusElement.className = 'mt-2 px-3 py-1 rounded-full text-sm font-semibold inline-block bg-orange-100 text-orange-700';
+            } else if (value < 70) {
+                statusElement.textContent = 'Sufficient';
+                statusElement.className = 'mt-2 px-3 py-1 rounded-full text-sm font-semibold inline-block bg-cyan-100 text-cyan-700';
+            } else {
+                statusElement.textContent = 'Full';
+                statusElement.className = 'mt-2 px-3 py-1 rounded-full text-sm font-semibold inline-block bg-green-100 text-green-700';
+            }
+        }
+        
+        // Update temperature display
+        function updateTemperature(value) {
+            document.getElementById('temperatureValue').textContent = value;
+            
+            const statusElement = document.getElementById('temperatureStatus');
+            if (value < 20) {
+                statusElement.textContent = 'Cold';
+                statusElement.className = 'mt-2 px-3 py-1 rounded-full text-sm font-semibold inline-block bg-blue-100 text-blue-700';
+            } else if (value <= 32) {
+                statusElement.textContent = 'Normal';
+                statusElement.className = 'mt-2 px-3 py-1 rounded-full text-sm font-semibold inline-block bg-green-100 text-green-700';
+            } else {
+                statusElement.textContent = 'Hot';
+                statusElement.className = 'mt-2 px-3 py-1 rounded-full text-sm font-semibold inline-block bg-red-100 text-red-700';
+            }
+        }
+        
+        // Update humidity display
+        function updateHumidity(value) {
+            document.getElementById('humidityValue').textContent = value;
+            document.getElementById('humidityBar').style.width = value + '%';
+            
+            const statusElement = document.getElementById('humidityStatus');
+            if (value < 40) {
+                statusElement.textContent = 'Dry';
+                statusElement.className = 'mt-2 px-3 py-1 rounded-full text-sm font-semibold inline-block bg-orange-100 text-orange-700';
+            } else if (value <= 70) {
+                statusElement.textContent = 'Comfortable';
+                statusElement.className = 'mt-2 px-3 py-1 rounded-full text-sm font-semibold inline-block bg-indigo-100 text-indigo-700';
+            } else {
+                statusElement.textContent = 'Humid';
+                statusElement.className = 'mt-2 px-3 py-1 rounded-full text-sm font-semibold inline-block bg-blue-100 text-blue-700';
+            }
+        }
+        
+        // Update light level display
+        function updateLightLevel(value) {
+            document.getElementById('lightValue').textContent = value;
+            
+            const statusElement = document.getElementById('lightStatus');
+            const conditionElement = document.getElementById('lightCondition');
+            
+            if (value < 100) {
+                statusElement.textContent = 'Dark';
+                statusElement.className = 'mt-2 px-3 py-1 rounded-full text-sm font-semibold inline-block bg-gray-700 text-white';
+                conditionElement.textContent = 'Night';
+            } else if (value < 400) {
+                statusElement.textContent = 'Dim';
+                statusElement.className = 'mt-2 px-3 py-1 rounded-full text-sm font-semibold inline-block bg-gray-100 text-gray-700';
+                conditionElement.textContent = 'Cloudy';
+            } else if (value < 800) {
+                statusElement.textContent = 'Moderate';
+                statusElement.className = 'mt-2 px-3 py-1 rounded-full text-sm font-semibold inline-block bg-yellow-100 text-yellow-700';
+                conditionElement.textContent = 'Partly Cloudy';
+            } else {
+                statusElement.textContent = 'Bright';
+                statusElement.className = 'mt-2 px-3 py-1 rounded-full text-sm font-semibold inline-block bg-yellow-100 text-yellow-700';
+                conditionElement.textContent = 'Sunny';
+            }
+        }
+        
+        // Update operating hours
+        function updateOperatingHours(value) {
+            document.getElementById('totalHoursValue').textContent = value;
+            
+            // Simulate today, week, and average hours
+            const todayHours = randomInRange(1, 4, 1);
+            const weekHours = randomInRange(15, 25, 1);
+            const avgHours = (weekHours / 7).toFixed(1);
+            
+            document.getElementById('todayHours').textContent = todayHours + ' hrs';
+            document.getElementById('weekHours').textContent = weekHours + ' hrs';
+            document.getElementById('avgHours').textContent = avgHours + ' hrs';
+        }
+        
+        // Render activity log
+        function renderActivityLog() {
+            const logs = loadFromStorage(CONFIG.storageKeys.activityLog, []);
+            const container = document.getElementById('activityLog');
+            
+            if (logs.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-8 text-gray-400">
+                        <i class="fas fa-inbox text-4xl mb-2"></i>
+                        <p>No activities yet</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = logs.map(log => {
+                const colorClasses = {
+                    blue: 'bg-blue-100 text-blue-600',
+                    green: 'bg-green-100 text-green-600',
+                    yellow: 'bg-yellow-100 text-yellow-600',
+                    red: 'bg-red-100 text-red-600',
+                    purple: 'bg-purple-100 text-purple-600',
+                    gray: 'bg-gray-100 text-gray-600'
+                };
+                
+                return `
+                    <div class="flex items-start space-x-3 p-3 bg-gray-50 rounded-lg slide-in">
+                        <div class="w-10 h-10 ${colorClasses[log.color] || colorClasses.blue} rounded-full flex items-center justify-center flex-shrink-0">
+                            <i class="fas fa-${log.icon}"></i>
+                        </div>
+                        <div class="flex-1">
+                            <div class="flex items-center justify-between">
+                                <span class="font-semibold text-gray-800">${log.type}</span>
+                                <span class="text-xs text-gray-500">${getRelativeTime(log.timestamp)}</span>
+                            </div>
+                            <p class="text-sm text-gray-600 mt-1">${log.message}</p>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        // Render statistics
+        function renderStatistics(stats) {
+            document.getElementById('statTotalWatering').textContent = stats.totalWatering;
+            document.getElementById('statWaterUsed').textContent = formatNumber(stats.waterUsed);
+            document.getElementById('statEnergyUsed').textContent = stats.energyUsed.toFixed(1);
+            document.getElementById('statUptime').textContent = stats.uptime.toFixed(1);
+        }
+        
+        // ============================================
+        // NOTIFICATION FUNCTIONS
+        // ============================================
+        
+        // Show alert banner
+        function showAlert(type, message) {
+            const container = document.getElementById('alertContainer');
+            const alertId = 'alert-' + Date.now();
+            
+            const colors = {
+                info: 'bg-blue-100 border-blue-500 text-blue-700',
+                success: 'bg-green-100 border-green-500 text-green-700',
+                warning: 'bg-yellow-100 border-yellow-500 text-yellow-700',
+                error: 'bg-red-100 border-red-500 text-red-700'
+            };
+            
+            const icons = {
+                info: 'info-circle',
+                success: 'check-circle',
+                warning: 'exclamation-triangle',
+                error: 'exclamation-circle'
+            };
+            
+            const alertHTML = `
+                <div id="${alertId}" class="alert-enter ${colors[type]} border-l-4 p-4 rounded-lg shadow-lg mb-4" role="alert">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center space-x-3">
+                            <i class="fas fa-${icons[type]} text-2xl"></i>
+                            <p class="font-semibold">${message}</p>
+                        </div>
+                        <button onclick="dismissAlert('${alertId}')" class="text-2xl hover:opacity-70 transition">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            container.insertAdjacentHTML('beforeend', alertHTML);
+            
+            // Auto dismiss after 5 seconds
+            setTimeout(() => dismissAlert(alertId), 5000);
+        }
+        
+        // Dismiss alert
+        function dismissAlert(alertId) {
+            const alert = document.getElementById(alertId);
+            if (alert) {
+                alert.style.animation = 'fadeOut 0.5s ease-in';
+                setTimeout(() => alert.remove(), 500);
+            }
+        }
+        
+        // Show toast notification
+        function showToast(type, message) {
+            const container = document.getElementById('toastContainer');
+            const toastId = 'toast-' + Date.now();
+            
+            const colors = {
+                info: 'bg-blue-500',
+                success: 'bg-green-500',
+                warning: 'bg-yellow-500',
+                error: 'bg-red-500'
+            };
+            
+            const toastHTML = `
+                <div id="${toastId}" class="toast ${colors[type]} text-white p-4 rounded-lg shadow-2xl mb-3">
+                    <div class="flex items-center justify-between">
+                        <p class="font-semibold">${message}</p>
+                        <button onclick="dismissToast('${toastId}')" class="ml-4 text-xl hover:opacity-70 transition">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            container.insertAdjacentHTML('beforeend', toastHTML);
+            
+            // Auto dismiss after 4 seconds
+            setTimeout(() => dismissToast(toastId), 4000);
+        }
+        
+        // Dismiss toast
+        function dismissToast(toastId) {
+            const toast = document.getElementById(toastId);
+            if (toast) {
+                toast.classList.add('toast-exit');
+                setTimeout(() => toast.remove(), 500);
+            }
+        }
+        
+        // ============================================
+        // CHART FUNCTIONS
+        // ============================================
+        
+        // Initialize all charts
+        function initializeCharts() {
+            // Soil Moisture Chart
+            const moistureCtx = document.getElementById('moistureChart').getContext('2d');
+            charts.moisture = new Chart(moistureCtx, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: 'Soil Moisture (%)',
+                        data: [],
+                        borderColor: 'rgb(132, 204, 22)',
+                        backgroundColor: 'rgba(132, 204, 22, 0.1)',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.4,
+                        pointRadius: 4,
+                        pointHoverRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'top'
+                        },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100,
+                            ticks: {
+                                callback: function(value) {
+                                    return value + '%';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // Temperature & Humidity Chart
+            const tempCtx = document.getElementById('tempHumidityChart').getContext('2d');
+            charts.tempHumidity = new Chart(tempCtx, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [
+                        {
+                            label: 'Temperature (°C)',
+                            data: [],
+                            borderColor: 'rgb(239, 68, 68)',
+                            backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                            borderWidth: 3,
+                            fill: true,
+                            tension: 0.4,
+                            yAxisID: 'y',
+                        },
+                        {
+                            label: 'Humidity (%)',
+                            data: [],
+                            borderColor: 'rgb(99, 102, 241)',
+                            backgroundColor: 'rgba(99, 102, 241, 0.1)',
+                            borderWidth: 3,
+                            fill: true,
+                            tension: 0.4,
+                            yAxisID: 'y1',
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: {
+                        mode: 'index',
+                        intersect: false,
+                    },
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'top'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            type: 'linear',
+                            display: true,
+                            position: 'left',
+                            title: {
+                                display: true,
+                                text: 'Temperature (°C)'
+                            }
+                        },
+                        y1: {
+                            type: 'linear',
+                            display: true,
+                            position: 'right',
+                            title: {
+                                display: true,
+                                text: 'Humidity (%)'
+                            },
+                            grid: {
+                                drawOnChartArea: false,
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // Water Usage Chart
+            const waterCtx = document.getElementById('waterUsageChart').getContext('2d');
+            charts.waterUsage = new Chart(waterCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                    datasets: [{
+                        label: 'Water Used (L)',
+                        data: [8.5, 7.2, 9.1, 6.8, 8.9, 7.5, 8.3],
+                        backgroundColor: 'rgba(6, 182, 212, 0.7)',
+                        borderColor: 'rgb(6, 182, 212)',
+                        borderWidth: 2,
+                        borderRadius: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'top'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return value + 'L';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // Battery Level Chart
+            const batteryCtx = document.getElementById('batteryChart').getContext('2d');
+            charts.battery = new Chart(batteryCtx, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: 'Battery Level (%)',
+                        data: [],
+                        borderColor: 'rgb(34, 197, 94)',
+                        backgroundColor: 'rgba(34, 197, 94, 0.1)',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.4,
+                        pointRadius: 4,
+                        pointHoverRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'top'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100,
+                            ticks: {
+                                callback: function(value) {
+                                    return value + '%';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // Load historical data
+            loadChartData();
+        }
+        
+        // Load chart data from localStorage
+        function loadChartData() {
+            const dataPoints = loadFromStorage(CONFIG.storageKeys.sensorData, []);
+            
+            if (dataPoints.length === 0) {
+                // Generate sample data for demonstration
+                generateSampleData();
+                return;
+            }
+            
+            // Get last 20 data points for charts
+            const recentData = dataPoints.slice(-20);
+            
+            // Update moisture chart
+            charts.moisture.data.labels = recentData.map((d, i) => {
+                const date = new Date(d.timestamp);
+                return date.getHours() + ':' + String(date.getMinutes()).padStart(2, '0');
+            });
+            charts.moisture.data.datasets[0].data = recentData.map(d => d.soilMoisture);
+            charts.moisture.update();
+            
+            // Update temp & humidity chart
+            charts.tempHumidity.data.labels = recentData.map((d, i) => {
+                const date = new Date(d.timestamp);
+                return date.getHours() + ':' + String(date.getMinutes()).padStart(2, '0');
+            });
+            charts.tempHumidity.data.datasets[0].data = recentData.map(d => d.temperature);
+            charts.tempHumidity.data.datasets[1].data = recentData.map(d => d.humidity);
+            charts.tempHumidity.update();
+            
+            // Update battery chart
+            charts.battery.data.labels = recentData.map((d, i) => {
+                const date = new Date(d.timestamp);
+                return date.getHours() + ':' + String(date.getMinutes()).padStart(2, '0');
+            });
+            charts.battery.data.datasets[0].data = recentData.map(d => d.battery);
+            charts.battery.update();
+        }
+        
+        // Generate sample historical data
+        function generateSampleData() {
+            const now = Date.now();
+            const dataPoints = [];
+            
+            for (let i = 20; i >= 0; i--) {
+                dataPoints.push({
+                    timestamp: now - (i * 3600000), // Every hour
+                    soilMoisture: randomInRange(50, 80),
+                    temperature: randomInRange(24, 32),
+                    humidity: randomInRange(55, 75),
+                    battery: 100 - (i * 2), // Gradual battery drain
+                    pH: randomInRange(60, 75, 1) / 10,
+                    waterLevel: randomInRange(60, 90),
+                    lightLevel: randomInRange(300, 900),
+                    operatingHours: 127
+                });
+            }
+            
+            saveToStorage(CONFIG.storageKeys.sensorData, dataPoints);
+            loadChartData();
+        }
+        
+        // Update chart with new data point
+        function updateCharts() {
+            const timestamp = new Date();
+            const timeLabel = timestamp.getHours() + ':' + String(timestamp.getMinutes()).padStart(2, '0');
+            
+            // Update moisture chart
+            if (charts.moisture.data.labels.length > 20) {
+                charts.moisture.data.labels.shift();
+                charts.moisture.data.datasets[0].data.shift();
+            }
+            charts.moisture.data.labels.push(timeLabel);
+            charts.moisture.data.datasets[0].data.push(sensorData.soilMoisture);
+            charts.moisture.update('none'); // Update without animation for performance
+            
+            // Update temp & humidity chart
+            if (charts.tempHumidity.data.labels.length > 20) {
+                charts.tempHumidity.data.labels.shift();
+                charts.tempHumidity.data.datasets[0].data.shift();
+                charts.tempHumidity.data.datasets[1].data.shift();
+            }
+            charts.tempHumidity.data.labels.push(timeLabel);
+            charts.tempHumidity.data.datasets[0].data.push(sensorData.temperature);
+            charts.tempHumidity.data.datasets[1].data.push(sensorData.humidity);
+            charts.tempHumidity.update('none');
+            
+            // Update battery chart
+            if (charts.battery.data.labels.length > 20) {
+                charts.battery.data.labels.shift();
+                charts.battery.data.datasets[0].data.shift();
+            }
+            charts.battery.data.labels.push(timeLabel);
+            charts.battery.data.datasets[0].data.push(sensorData.battery);
+            charts.battery.update('none');
+        }
+        
+        // ============================================
+        // SENSOR DATA SIMULATION
+        // ============================================
+        
+        // Simulate sensor data updates
+        function simulateSensorData() {
+            // Smooth changes to prevent jumps
+            sensorData.soilMoisture = Math.max(0, Math.min(100, 
+                sensorData.soilMoisture + randomInRange(-2, 2)));
+            
+            sensorData.pH = Math.max(4.0, Math.min(9.0, 
+                sensorData.pH + randomInRange(-0.1, 0.1, 1)));
+            
+            sensorData.temperature = Math.max(20, Math.min(40, 
+                sensorData.temperature + randomInRange(-1, 1)));
+            
+            sensorData.humidity = Math.max(30, Math.min(90, 
+                sensorData.humidity + randomInRange(-2, 2)));
+            
+            sensorData.battery = Math.max(0, Math.min(100, 
+                sensorData.battery - 0.1)); // Gradual drain
+            
+            sensorData.waterLevel = Math.max(0, Math.min(100, 
+                sensorData.waterLevel + randomInRange(-1, 1)));
+            
+            sensorData.lightLevel = Math.max(0, Math.min(1200, 
+                sensorData.lightLevel + randomInRange(-50, 50)));
+            
+            // Update UI
+            updateSoilMoisture(Math.round(sensorData.soilMoisture));
+            updatePH(sensorData.pH);
+            updateTemperature(Math.round(sensorData.temperature));
+            updateHumidity(Math.round(sensorData.humidity));
+            updateBattery(Math.round(sensorData.battery));
+            updateWaterTank(Math.round(sensorData.waterLevel));
+            updateLightLevel(Math.round(sensorData.lightLevel));
+            
+            // Save to localStorage
+            saveSensorDataPoint();
+            
+            // Update last update time
+            lastUpdateTime = Date.now();
+        }
+        
+        // ============================================
+        // CONTROL FUNCTIONS
+        // ============================================
+        
+        // Start watering
+        function startWatering() {
+            if (systemState.isWatering) {
+                showToast('warning', 'System is already watering!');
+                return;
+            }
+            
+            systemState.isWatering = true;
+            systemState.startTime = Date.now();
+            
+            // Update UI
+            document.getElementById('btnStart').disabled = true;
+            document.getElementById('btnStart').classList.add('opacity-50', 'cursor-not-allowed');
+            document.getElementById('btnStop').disabled = false;
+            document.getElementById('btnStop').classList.remove('opacity-50', 'cursor-not-allowed');
+            document.getElementById('btnStop').classList.add('glow-red');
+            
+            updateHeroStatus();
+            
+            // Add ripple effect
+            createRipple(event);
+            
+            // Log activity
+            saveActivityLog('Watering Started', 'Manual watering cycle initiated by user', 'play-circle', 'green');
+            
+            // Show notification
+            showToast('success', 'Watering started successfully!');
+            
+            // Simulate watering effects
+            wateringInterval = setInterval(() => {
+                // Increase soil moisture
+                sensorData.soilMoisture = Math.min(100, sensorData.soilMoisture + 0.5);
+                // Decrease water level
+                sensorData.waterLevel = Math.max(0, sensorData.waterLevel - 0.3);
+                // Drain battery faster
+                sensorData.battery = Math.max(0, sensorData.battery - 0.2);
+                
+                updateSoilMoisture(Math.round(sensorData.soilMoisture));
+                updateWaterTank(Math.round(sensorData.waterLevel));
+                updateBattery(Math.round(sensorData.battery));
+                
+                // Update statistics
+                const stats = loadFromStorage(CONFIG.storageKeys.statistics, {
+                    totalWatering: 247,
+                    waterUsed: 1458,
+                    energyUsed: 89.5,
+                    uptime: 99.2
+                });
+                stats.waterUsed += 0.05;
+                stats.energyUsed += 0.001;
+                renderStatistics(stats);
+                saveToStorage(CONFIG.storageKeys.statistics, stats);
+            }, 1000);
+            
+            // Save state
+            saveToStorage(CONFIG.storageKeys.systemState, systemState);
+        }
+        
+        // Stop watering
+        function stopWatering() {
+            if (!systemState.isWatering) {
+                showToast('warning', 'System is not watering!');
+                return;
+            }
+            
+            const duration = Math.floor((Date.now() - systemState.startTime) / 1000);
+            
+            systemState.isWatering = false;
+            systemState.duration = duration;
+            
+            // Clear interval
+            if (wateringInterval) {
+                clearInterval(wateringInterval);
+            }
+            
+            // Update UI
+            document.getElementById('btnStart').disabled = false;
+            document.getElementById('btnStart').classList.remove('opacity-50', 'cursor-not-allowed');
+            document.getElementById('btnStop').disabled = true;
+            document.getElementById('btnStop').classList.add('opacity-50', 'cursor-not-allowed');
+            document.getElementById('btnStop').classList.remove('glow-red');
+            
+            updateHeroStatus();
+            
+            // Add ripple effect
+            createRipple(event);
+            
+            // Log activity
+            const minutes = Math.floor(duration / 60);
+            const seconds = duration % 60;
+            saveActivityLog('Watering Stopped', 
+                `Watering cycle completed. Duration: ${minutes}m ${seconds}s`, 
+                'stop-circle', 'red');
+            
+            // Show notification
+            showToast('info', `Watering stopped. Duration: ${minutes}m ${seconds}s`);
+            
+            // Update statistics
+            const stats = loadFromStorage(CONFIG.storageKeys.statistics, {
+                totalWatering: 247,
+                waterUsed: 1458,
+                energyUsed: 89.5,
+                uptime: 99.2
+            });
+            stats.totalWatering += 1;
+            renderStatistics(stats);
+            saveToStorage(CONFIG.storageKeys.statistics, stats);
+            
+            // Save state
+            saveToStorage(CONFIG.storageKeys.systemState, systemState);
+        }
+        
+        // Create ripple effect
+        function createRipple(e) {
+            if (!e || !e.currentTarget) return;
+            
+            const button = e.currentTarget;
+            const ripple = document.createElement('span');
+            ripple.classList.add('ripple');
+            
+            const rect = button.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            
+            ripple.style.left = x + 'px';
+            ripple.style.top = y + 'px';
+            
+            button.appendChild(ripple);
+            
+            setTimeout(() => ripple.remove(), 600);
+        }
+        
+        // ============================================
+        // EVENT LISTENERS
+        // ============================================
+        
+        // Start button
+        document.getElementById('btnStart').addEventListener('click', startWatering);
+        
+        // Stop button
+        document.getElementById('btnStop').addEventListener('click', stopWatering);
+        
+        // Clear log button
+        document.getElementById('btnClearLog').addEventListener('click', () => {
+            if (confirm('Are you sure you want to clear all activity logs?')) {
+                saveToStorage(CONFIG.storageKeys.activityLog, []);
+                renderActivityLog();
+                showToast('success', 'Activity log cleared');
+            }
+        });
+        
+        // Mode selector buttons
+        document.querySelectorAll('.mode-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const mode = e.currentTarget.dataset.mode;
+                
+                // Update button styles
+                document.querySelectorAll('.mode-btn').forEach(b => {
+                    b.classList.remove('bg-lime-500', 'border-lime-500', 'text-white');
+                    b.classList.add('bg-white', 'border-gray-300', 'text-gray-600');
+                });
+                
+                e.currentTarget.classList.remove('bg-white', 'border-gray-300', 'text-gray-600');
+                e.currentTarget.classList.add('bg-lime-500', 'border-lime-500', 'text-white');
+                
+                // Update system state
+                systemState.mode = mode;
+                saveToStorage(CONFIG.storageKeys.systemState, systemState);
+                
+                // Log activity
+                const modeNames = {
+                    auto: 'Automatic',
+                    manual: 'Manual',
+                    scheduled: 'Scheduled'
+                };
+                saveActivityLog('Mode Changed', 
+                    `Operation mode changed to ${modeNames[mode]}`, 
+                    'cog', 'purple');
+                
+                showToast('info', `Mode changed to ${modeNames[mode]}`);
+            });
+        });
+        
+        // Chart period selectors
+        document.getElementById('moistureChartPeriod').addEventListener('change', (e) => {
+            showToast('info', `Chart period changed to: ${e.target.value}`);
+            // In real implementation, this would fetch data for selected period
+        });
+        
+        document.getElementById('tempChartPeriod').addEventListener('change', (e) => {
+            showToast('info', `Chart period changed to: ${e.target.value}`);
+        });
+        
+        document.getElementById('waterChartPeriod').addEventListener('change', (e) => {
+            showToast('info', `Chart period changed to: ${e.target.value}`);
+        });
+        
+        document.getElementById('batteryChartPeriod').addEventListener('change', (e) => {
+            showToast('info', `Chart period changed to: ${e.target.value}`);
+        });
+        
+        // ============================================
+        // INITIALIZATION
+        // ============================================
+        
+        let wateringInterval = null;
+        
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('🌱 Automatic Plant Watering System - Dashboard Initialized');
+            
+            // Load saved state
+            const savedState = loadFromStorage(CONFIG.storageKeys.systemState);
+            if (savedState) {
+                systemState = savedState;
+                // Reset watering state on reload for safety
+                systemState.isWatering = false;
+            }
+            
+            // Load saved statistics
+            const savedStats = loadFromStorage(CONFIG.storageKeys.statistics);
+            if (savedStats) {
+                renderStatistics(savedStats);
+            }
+            
+            // Initialize UI
+            updateDateTime();
+            updateHeroStatus();
+            updateSoilMoisture(sensorData.soilMoisture);
+            updatePH(sensorData.pH);
+            updateTemperature(sensorData.temperature);
+            updateHumidity(sensorData.humidity);
+            updateBattery(sensorData.battery);
+            updateWaterTank(sensorData.waterLevel);
+            updateLightLevel(sensorData.lightLevel);
+            updateOperatingHours(sensorData.operatingHours);
+            
+            // Initialize charts
+            initializeCharts();
+            
+            // Load activity log
+            renderActivityLog();
+            
+            // Set init time
+            document.getElementById('initTime').textContent = 'Just now';
+            
+            // Start update intervals
+            setInterval(updateDateTime, 1000);
+            setInterval(updateLastUpdateTime, 1000);
+            setInterval(simulateSensorData, CONFIG.updateInterval);
+            setInterval(updateCharts, CONFIG.chartUpdateInterval);
+            setInterval(() => {
+                if (systemState.isWatering) {
+                    updateHeroStatus(); // Update timer
+                }
+            }, 1000);
+            
+            // Show welcome message
+            setTimeout(() => {
+                showToast('success', 'Dashboard loaded successfully! System ready.');
+            }, 1000);
+            
+            console.log('✅ All systems operational');
+        });
+        
+        // ============================================
+        // API INTEGRATION READY
+        // ============================================
+        
+        /**
+         * Function to receive data from ESP32/Backend
+         * Call this function when you receive data from your backend
+         * 
+         * Example usage:
+         * receiveDataFromESP({
+         *     soilMoisture: 68,
+         *     pH: 6.9,
+         *     temperature: 27,
+         *     humidity: 62,
+         *     battery: 84,
+         *     waterLevel: 75,
+         *     lightLevel: 820
+         * });
+         */
+        function receiveDataFromESP(data) {
+            console.log('📡 Received data from ESP32:', data);
+            
+            // Update sensor data
+            if (data.soilMoisture !== undefined) {
+                sensorData.soilMoisture = data.soilMoisture;
+                updateSoilMoisture(data.soilMoisture);
+            }
+            
+            if (data.pH !== undefined) {
+                sensorData.pH = data.pH;
+                updatePH(data.pH);
+            }
+            
+            if (data.temperature !== undefined) {
+                sensorData.temperature = data.temperature;
+                updateTemperature(data.temperature);
+            }
+            
+            if (data.humidity !== undefined) {
+                sensorData.humidity = data.humidity;
+                updateHumidity(data.humidity);
+            }
+            
+            if (data.battery !== undefined) {
+                sensorData.battery = data.battery;
+                updateBattery(data.battery);
+            }
+            
+            if (data.waterLevel !== undefined) {
+                sensorData.waterLevel = data.waterLevel;
+                updateWaterTank(data.waterLevel);
+            }
+            
+            if (data.lightLevel !== undefined) {
+                sensorData.lightLevel = data.lightLevel;
+                updateLightLevel(data.lightLevel);
+            }
+            
+            if (data.operatingHours !== undefined) {
+                sensorData.operatingHours = data.operatingHours;
+                updateOperatingHours(data.operatingHours);
+            }
+            
+            // Save to localStorage
+            saveSensorDataPoint();
+            
+            // Update last update time
+            lastUpdateTime = Date.now();
+            
+            // Log data received
+            saveActivityLog('Data Received', 
+                'New sensor data received from ESP32', 
+                'cloud-download-alt', 'blue');
+        }
+        
+        /**
+         * Function to send command to ESP32/Backend
+         * This function should be connected to your backend API
+         * 
+         * Example usage:
+         * sendCommandToESP('START_WATERING');
+         * sendCommandToESP('STOP_WATERING');
+         */
+        async function sendCommandToESP(command, params = {}) {
+            console.log('📤 Sending command to ESP32:', command, params);
+            
+            try {
+                // Replace this URL with your actual ESP32/Backend API endpoint
+                const API_ENDPOINT = 'http://your-esp32-ip/api/command';
+                
+                const response = await fetch(API_ENDPOINT, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        command: command,
+                        params: params,
+                        timestamp: Date.now()
+                    })
+                });
+                
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                
+                const result = await response.json();
+                console.log('✅ Command sent successfully:', result);
+                
+                return result;
+            } catch (error) {
+                console.error('❌ Error sending command:', error);
+                showAlert('error', 'Failed to communicate with ESP32. Please check connection.');
+                return null;
+            }
+        }
+        
+        /**
+         * WebSocket connection for real-time updates
+         * Uncomment and configure when ready to use
+         */
+        /*
+        const WS_URL = 'ws://your-esp32-ip/ws';
+        let websocket = null;
+        
+        function connectWebSocket() {
+            websocket = new WebSocket(WS_URL);
+            
+            websocket.onopen = () => {
+                console.log('🔌 WebSocket connected');
+                showToast('success', 'Connected to ESP32');
+                systemState.isOnline = true;
+            };
+            
+            websocket.onmessage = (event) => {
+                try {
+                    const data = JSON.parse(event.data);
+                    receiveDataFromESP(data);
+                } catch (error) {
+                    console.error('Error parsing WebSocket data:', error);
+                }
+            };
+            
+            websocket.onerror = (error) => {
+                console.error('WebSocket error:', error);
+                showAlert('error', 'WebSocket connection error');
+            };
+            
+            websocket.onclose = () => {
+                console.log('🔌 WebSocket disconnected');
+                showAlert('warning', 'Disconnected from ESP32. Reconnecting...');
+                systemState.isOnline = false;
+                
+                // Attempt to reconnect after 5 seconds
+                setTimeout(connectWebSocket, 5000);
+            };
+        }
+        
+        // Initialize WebSocket connection
+        // connectWebSocket();
+        */
+        
+    </script>
+</body>
+</html>
